@@ -11,7 +11,7 @@ export default function WalletPage() {
         <iframe
           id="wallet-iframe"
           src="/wallet/iframe"
-          sandbox="allow-scripts"
+          sandbox="allow-scripts allow-same-origin"
           title="VELA Wallet"
           width="100%"
           height="600px"
