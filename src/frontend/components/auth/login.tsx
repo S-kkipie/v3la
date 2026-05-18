@@ -9,7 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/frontend/components/ui/card";
-import { useLogin } from "../hooks/use-login";
+import { useLogin } from "@/frontend/hooks/auth/use-login";
 import { GoogleIcon } from "./google-icon";
 
 /**

@@ -9,6 +9,7 @@ import {
     useEffect,
     useRef,
 } from "react";
+import { authClient } from "@/frontend/auth/auth";
 import { Button } from "@/frontend/components/ui/button";
 import {
     DropdownMenu,
@@ -20,7 +21,6 @@ import {
 import { useAuth } from "@/frontend/context/auth-context";
 import { useChildLogger } from "@/frontend/context/logger-context";
 import { cn } from "@/frontend/lib/utils";
-import { authClient } from "../auth";
 import { UserAvatar } from "./user-avatar";
 import { UserView } from "./user-view";
 
@@ -76,7 +76,6 @@ export function UserButton({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger
-                asChild
                 className={cn(size === "icon" && "rounded-full")}
             >
                 {trigger ||
@@ -109,14 +108,7 @@ export function UserButton({
                 alignOffset={alignOffset}
                 side={side}
                 sideOffset={sideOffset}
-                onCloseAutoFocus={(e) => e.preventDefault()}
             >
-                {/* <div className="-my-1 text-muted-foreground text-xs">
-                    Cuenta
-                </div>
-
-                <DropdownMenuSeparator /> */}
-
                 {additionalLinks?.map((link, index) => {
                     if (
                         !link ||
@@ -124,7 +116,7 @@ export function UserButton({
                         !("href" in link)
                     ) {
                         return (
-                            <DropdownMenuItem key={index} asChild>
+                            <DropdownMenuItem key={index}>
                                 {link}
                             </DropdownMenuItem>
                         );

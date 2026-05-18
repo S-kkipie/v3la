@@ -1,10 +1,11 @@
 "use client";
 
+import type { Session, User } from "better-auth";
 import { createContext, type ReactNode, useContext } from "react";
-import type { Session } from "@/frontend/auth/auth";
 
 export type AuthContextType = {
     session: Session;
+    user: User
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -14,6 +15,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export type AuthProviderProps = {
     children: ReactNode;
     session: Session;
+    user: User
 };
 
 /**
@@ -25,9 +27,9 @@ export type AuthProviderProps = {
  * @param props - Component properties
  * @returns The provider element
  */
-export const AuthProvider = ({ children, session }: AuthProviderProps) => {
+export const AuthProvider = ({ children, session, user }: AuthProviderProps) => {
     return (
-        <AuthContext.Provider value={{ session }}>
+        <AuthContext.Provider value={{ session, user }}>
             {children}
         </AuthContext.Provider>
     );
@@ -42,12 +44,12 @@ export const AuthProvider = ({ children, session }: AuthProviderProps) => {
  * @returns The combined `session`, `user`, and `organization` data if authenticated; otherwise `undefined`.
  * @throws Error if the context is not found (missing provider).
  */
-export const useAuth = (): Session => {
+export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
 
     if (!context) {
         throw new Error("useAuth must be used within AuthProvider");
     }
 
-    return context.session;
+    return context;
 };
