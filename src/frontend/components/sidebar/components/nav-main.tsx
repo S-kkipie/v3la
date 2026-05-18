@@ -58,12 +58,10 @@ export function NavMain({
                     return (
                         <Collapsible
                             key={item.title}
-                            asChild
                             defaultOpen={isOpen}
                         >
                             <SidebarMenuItem>
                                 <SidebarMenuButton
-                                    asChild
                                     tooltip={item.title}
                                     isActive={pathname === item.url}
                                 >
@@ -74,7 +72,7 @@ export function NavMain({
                                 </SidebarMenuButton>
                                 {item.items?.length ? (
                                     <>
-                                        <CollapsibleTrigger asChild>
+                                        <CollapsibleTrigger >
                                             <SidebarMenuAction className="data-[state=open]:rotate-90">
                                                 <ChevronRight />
                                                 <span className="sr-only">
@@ -89,7 +87,6 @@ export function NavMain({
                                                         key={subItem.title}
                                                     >
                                                         <SidebarMenuSubButton
-                                                            asChild
                                                             isActive={
                                                                 pathname ===
                                                                 subItem.url
