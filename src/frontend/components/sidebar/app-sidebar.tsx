@@ -1,8 +1,6 @@
 "use client";
 
-import {
-    School
-} from "lucide-react";
+import { School } from "lucide-react";
 import Link from "next/link";
 import type * as React from "react";
 import {
@@ -16,7 +14,6 @@ import {
 } from "@/frontend/components/ui/sidebar";
 import { NavUser } from "./components/nav-user";
 
-
 /**
  * Application sidebar component with role-based navigation filtering.
  *
@@ -28,13 +25,12 @@ import { NavUser } from "./components/nav-user";
  * @returns The sidebar element with filtered navigation
  */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
     return (
         <Sidebar variant="inset" {...props} collapsible="icon">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" >
+                        <SidebarMenuButton size="lg">
                             <Link href="/">
                                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                                     <School className="size-4" />

@@ -5,7 +5,7 @@ import { createContext, type ReactNode, useContext } from "react";
 
 export type AuthContextType = {
     session: Session;
-    user: User
+    user: User;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -15,7 +15,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export type AuthProviderProps = {
     children: ReactNode;
     session: Session;
-    user: User
+    user: User;
 };
 
 /**
@@ -27,7 +27,11 @@ export type AuthProviderProps = {
  * @param props - Component properties
  * @returns The provider element
  */
-export const AuthProvider = ({ children, session, user }: AuthProviderProps) => {
+export const AuthProvider = ({
+    children,
+    session,
+    user,
+}: AuthProviderProps) => {
     return (
         <AuthContext.Provider value={{ session, user }}>
             {children}

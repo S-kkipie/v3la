@@ -1,77 +1,75 @@
 {
-  "active_plan": "/home/skkippie/work/v3la/.sisyphus/plans/webauthn-prf-wallet.md",
-  "started_at": "2026-05-18T02:14:09.622Z",
-  "session_ids": [
-    "ses_1c73479d1ffecdFdBkr3nOGp8O"
-  ],
-  "session_origins": {
-    "ses_1c73479d1ffecdFdBkr3nOGp8O": "direct"
-  },
-  "plan_name": "webauthn-prf-wallet",
-  "agent": "atlas",
-  "task_sessions": {
-    "todo:1": {
-      "task_key": "todo:1",
-      "task_label": "1",
-      "task_title": "**Enable PRF in Better Auth Passkey Config**",
-      "session_id": "ses_1c7210e90ffe0yF4GBVkMkdRM0",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-18T02:18:41.363Z"
+    "active_plan": "/home/skkippie/work/v3la/.sisyphus/plans/webauthn-prf-wallet.md",
+    "started_at": "2026-05-18T02:14:09.622Z",
+    "session_ids": ["ses_1c73479d1ffecdFdBkr3nOGp8O"],
+    "session_origins": {
+        "ses_1c73479d1ffecdFdBkr3nOGp8O": "direct"
     },
-    "todo:6": {
-      "task_key": "todo:6",
-      "task_label": "6",
-      "task_title": "**Implement WebAuthn PRF Integration in Iframe**",
-      "session_id": "ses_1c71ba598ffe5DDUcBGMF9pjFG",
-      "agent": "Sisyphus-Junior",
-      "category": "deep",
-      "updated_at": "2026-05-18T02:26:27.782Z"
-    },
-    "todo:11": {
-      "task_key": "todo:11",
-      "task_label": "11",
-      "task_title": "**Parent postMessage Client**",
-      "session_id": "ses_1c716966cffeWhH9rHfzs3jlRb",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-18T02:30:04.733Z"
-    },
-    "todo:16": {
-      "task_key": "todo:16",
-      "task_label": "16",
-      "task_title": "**End-to-End Signing Flow (Create → Sign → Submit)**",
-      "session_id": "ses_1c6f6c5e3ffeSduGiPcV0VDrfa",
-      "agent": "Sisyphus-Junior",
-      "category": "deep",
-      "updated_at": "2026-05-18T03:09:58.251Z"
-    },
-    "todo:18": {
-      "task_key": "todo:18",
-      "task_label": "18",
-      "task_title": "**Write E2E Tests for postMessage Protocol**",
-      "session_id": "ses_1c6ee27c9ffelLPHhAMvHBs7YB",
-      "agent": "Sisyphus-Junior",
-      "category": "unspecified-high",
-      "updated_at": "2026-05-18T03:30:54.124Z"
-    },
-    "todo:20": {
-      "task_key": "todo:20",
-      "task_label": "20",
-      "task_title": "**Security Audit (Buffer Clearing, Origin Validation, Key Exposure)**",
-      "session_id": "ses_1c6b91e2dffeRYrDQ9RAMvu5Od",
-      "agent": "Sisyphus-Junior",
-      "category": "unspecified-high",
-      "updated_at": "2026-05-18T04:14:12.557Z"
-    },
-    "todo:23": {
-      "task_key": "todo:23",
-      "task_label": "23",
-      "task_title": "**Code Cleanup + Lint + Typecheck**",
-      "session_id": "ses_1c6b261e4ffewmAt3frRQKBS1a",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-18T04:28:17.111Z"
+    "plan_name": "webauthn-prf-wallet",
+    "agent": "atlas",
+    "task_sessions": {
+        "todo:1": {
+            "task_key": "todo:1",
+            "task_label": "1",
+            "task_title": "**Enable PRF in Better Auth Passkey Config**",
+            "session_id": "ses_1c7210e90ffe0yF4GBVkMkdRM0",
+            "agent": "Sisyphus-Junior",
+            "category": "quick",
+            "updated_at": "2026-05-18T02:18:41.363Z"
+        },
+        "todo:6": {
+            "task_key": "todo:6",
+            "task_label": "6",
+            "task_title": "**Implement WebAuthn PRF Integration in Iframe**",
+            "session_id": "ses_1c71ba598ffe5DDUcBGMF9pjFG",
+            "agent": "Sisyphus-Junior",
+            "category": "deep",
+            "updated_at": "2026-05-18T02:26:27.782Z"
+        },
+        "todo:11": {
+            "task_key": "todo:11",
+            "task_label": "11",
+            "task_title": "**Parent postMessage Client**",
+            "session_id": "ses_1c716966cffeWhH9rHfzs3jlRb",
+            "agent": "Sisyphus-Junior",
+            "category": "quick",
+            "updated_at": "2026-05-18T02:30:04.733Z"
+        },
+        "todo:16": {
+            "task_key": "todo:16",
+            "task_label": "16",
+            "task_title": "**End-to-End Signing Flow (Create → Sign → Submit)**",
+            "session_id": "ses_1c6f6c5e3ffeSduGiPcV0VDrfa",
+            "agent": "Sisyphus-Junior",
+            "category": "deep",
+            "updated_at": "2026-05-18T03:09:58.251Z"
+        },
+        "todo:18": {
+            "task_key": "todo:18",
+            "task_label": "18",
+            "task_title": "**Write E2E Tests for postMessage Protocol**",
+            "session_id": "ses_1c6ee27c9ffelLPHhAMvHBs7YB",
+            "agent": "Sisyphus-Junior",
+            "category": "unspecified-high",
+            "updated_at": "2026-05-18T03:30:54.124Z"
+        },
+        "todo:20": {
+            "task_key": "todo:20",
+            "task_label": "20",
+            "task_title": "**Security Audit (Buffer Clearing, Origin Validation, Key Exposure)**",
+            "session_id": "ses_1c6b91e2dffeRYrDQ9RAMvu5Od",
+            "agent": "Sisyphus-Junior",
+            "category": "unspecified-high",
+            "updated_at": "2026-05-18T04:14:12.557Z"
+        },
+        "todo:23": {
+            "task_key": "todo:23",
+            "task_label": "23",
+            "task_title": "**Code Cleanup + Lint + Typecheck**",
+            "session_id": "ses_1c6b261e4ffewmAt3frRQKBS1a",
+            "agent": "Sisyphus-Junior",
+            "category": "quick",
+            "updated_at": "2026-05-18T04:28:17.111Z"
+        }
     }
-  }
 }
