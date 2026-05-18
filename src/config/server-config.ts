@@ -1,7 +1,8 @@
 import { env } from "./env";
 
 const ServerConfig = {
-    dynamicEnvironmentId: env.DYNAMIC_ENVIRONMENT_ID,
+  databaseURL: env.DATABASE_URL,
+  baseURL: env.NEXT_PUBLIC_BASE_URL,
 };
 
 export default ServerConfig;

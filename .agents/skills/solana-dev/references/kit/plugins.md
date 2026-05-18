@@ -16,13 +16,13 @@ npm install @solana/kit @solana/kit-plugin-rpc @solana/kit-plugin-signer
 ```
 
 ```ts
-import { createClient } from '@solana/kit';
-import { solanaRpc } from '@solana/kit-plugin-rpc';
-import { signer } from '@solana/kit-plugin-signer';
+import { createClient } from "@solana/kit";
+import { solanaRpc } from "@solana/kit-plugin-rpc";
+import { signer } from "@solana/kit-plugin-signer";
 
 const client = createClient()
   .use(signer(mySigner)) // sets payer + identity to the same keypair
-  .use(solanaRpc({ rpcUrl: 'https://api.mainnet-beta.solana.com' }));
+  .use(solanaRpc({ rpcUrl: "https://api.mainnet-beta.solana.com" }));
 
 await client.sendTransaction([myInstruction]);
 ```
@@ -31,32 +31,38 @@ await client.sendTransaction([myInstruction]);
 
 **`solanaRpc` options:**
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `rpcUrl` | `string` | RPC endpoint (required) |
-| `rpcSubscriptionsUrl` | `string` | WS endpoint (defaults to `rpcUrl` with `http`→`ws`) |
-| `rpcConfig` | `object` | Forwarded to `createSolanaRpc` |
-| `rpcSubscriptionsConfig` | `object` | Forwarded to `createSolanaRpcSubscriptions` |
-| `transactionConfig` | `object` | Tx planner options (priority fees, etc.) |
-| `maxConcurrency` | `number` | Concurrent tx limit (default: 10) |
-| `skipPreflight` | `boolean` | Always skip preflight (default: false) |
+| Option                   | Type      | Description                                         |
+| ------------------------ | --------- | --------------------------------------------------- |
+| `rpcUrl`                 | `string`  | RPC endpoint (required)                             |
+| `rpcSubscriptionsUrl`    | `string`  | WS endpoint (defaults to `rpcUrl` with `http`→`ws`) |
+| `rpcConfig`              | `object`  | Forwarded to `createSolanaRpc`                      |
+| `rpcSubscriptionsConfig` | `object`  | Forwarded to `createSolanaRpcSubscriptions`         |
+| `transactionConfig`      | `object`  | Tx planner options (priority fees, etc.)            |
+| `maxConcurrency`         | `number`  | Concurrent tx limit (default: 10)                   |
+| `skipPreflight`          | `boolean` | Always skip preflight (default: false)              |
 
 ### Cluster-Specialized Variants
 
 ```ts
-import { createClient } from '@solana/kit';
-import { solanaMainnetRpc, solanaDevnetRpc, solanaLocalRpc } from '@solana/kit-plugin-rpc';
-import { signer, signerFromFile } from '@solana/kit-plugin-signer';
+import { createClient } from "@solana/kit";
+import {
+  solanaMainnetRpc,
+  solanaDevnetRpc,
+  solanaLocalRpc,
+} from "@solana/kit-plugin-rpc";
+import { signer, signerFromFile } from "@solana/kit-plugin-signer";
 
 // Mainnet — type-narrowed; airdrop is NOT exposed
-const main = createClient().use(signer(s)).use(solanaMainnetRpc({ rpcUrl: '...' }));
+const main = createClient()
+  .use(signer(s))
+  .use(solanaMainnetRpc({ rpcUrl: "..." }));
 
 // Devnet — defaults to https://api.devnet.solana.com, includes airdrop
 const dev = createClient().use(signer(s)).use(solanaDevnetRpc());
 
 // Local — defaults to http://127.0.0.1:8899, includes airdrop
 const local = await createClient()
-  .use(signerFromFile('~/.config/solana/id.json'))
+  .use(signerFromFile("~/.config/solana/id.json"))
   .use(solanaLocalRpc());
 ```
 
@@ -67,9 +73,9 @@ npm install @solana/kit @solana/kit-plugin-litesvm @solana/kit-plugin-signer
 ```
 
 ```ts
-import { createClient, lamports } from '@solana/kit';
-import { litesvm } from '@solana/kit-plugin-litesvm';
-import { airdropSigner, generatedSigner } from '@solana/kit-plugin-signer';
+import { createClient, lamports } from "@solana/kit";
+import { litesvm } from "@solana/kit-plugin-litesvm";
+import { airdropSigner, generatedSigner } from "@solana/kit-plugin-signer";
 
 const client = await createClient()
   .use(generatedSigner())
@@ -77,7 +83,7 @@ const client = await createClient()
   .use(airdropSigner(lamports(1_000_000_000n)));
 
 client.svm.setAccount(myTestAccount);
-client.svm.addProgramFromFile(myProgramAddress, 'program.so');
+client.svm.addProgramFromFile(myProgramAddress, "program.so");
 
 await client.sendTransaction([myInstruction]);
 ```
@@ -99,35 +105,36 @@ See [overview.md](overview.md#client-api) for the full surface (`client.rpc`, `c
 ## Signer Plugins (`@solana/kit-plugin-signer`)
 
 Kit clients hold two signer roles:
+
 - **`payer`** — pays fees and rent
 - **`identity`** — wallet/authority for application accounts
 
 In most apps both roles are the same keypair, so **default to the `signer*` variants** — they install one keypair into both slots in one call. Use the role-specific `payer*` / `identity*` variants only when fees and authority come from different keypairs (e.g., gasless flows, treasury accounts, multisig).
 
-| Variant | Sets |
-|---|---|
+| Variant                         | Sets                                       |
+| ------------------------------- | ------------------------------------------ |
 | `signer*` (recommended default) | both `payer` and `identity` (same keypair) |
-| `payer*` | only `payer` |
-| `identity*` | only `identity` |
+| `payer*`                        | only `payer`                               |
+| `identity*`                     | only `identity`                            |
 
-| Plugin | Behavior |
-|---|---|
-| `signer(s)` / `payer(s)` / `identity(s)` | Install an existing `TransactionSigner` |
-| `generatedSigner()` / `generatedPayer()` / `generatedIdentity()` | Async; generate a new keypair |
-| `generatedSignerWithSol(amount)` / `generatedPayerWithSol(amount)` / `generatedIdentityWithSol(amount)` | Async; generate + airdrop. Requires an airdrop function already on the client (for low-level composition, install `rpcAirdrop()` first). |
-| `signerFromFile(path)` / `payerFromFile(path)` / `identityFromFile(path)` | Async; load keypair from a JSON file |
-| `airdropSigner(amount)` / `airdropPayer(amount)` / `airdropIdentity(amount)` | Airdrop SOL to an already-installed signer. Use with all-in-one `solanaLocalRpc` / `solanaDevnetRpc` / `litesvm` when the RPC plugin needs a payer first. |
+| Plugin                                                                                                  | Behavior                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signer(s)` / `payer(s)` / `identity(s)`                                                                | Install an existing `TransactionSigner`                                                                                                                   |
+| `generatedSigner()` / `generatedPayer()` / `generatedIdentity()`                                        | Async; generate a new keypair                                                                                                                             |
+| `generatedSignerWithSol(amount)` / `generatedPayerWithSol(amount)` / `generatedIdentityWithSol(amount)` | Async; generate + airdrop. Requires an airdrop function already on the client (for low-level composition, install `rpcAirdrop()` first).                  |
+| `signerFromFile(path)` / `payerFromFile(path)` / `identityFromFile(path)`                               | Async; load keypair from a JSON file                                                                                                                      |
+| `airdropSigner(amount)` / `airdropPayer(amount)` / `airdropIdentity(amount)`                            | Airdrop SOL to an already-installed signer. Use with all-in-one `solanaLocalRpc` / `solanaDevnetRpc` / `litesvm` when the RPC plugin needs a payer first. |
 
 ```ts
-import { createClient, lamports } from '@solana/kit';
-import { rpcAirdrop, solanaRpcConnection } from '@solana/kit-plugin-rpc';
-import { generatedSignerWithSol } from '@solana/kit-plugin-signer';
+import { createClient, lamports } from "@solana/kit";
+import { rpcAirdrop, solanaRpcConnection } from "@solana/kit-plugin-rpc";
+import { generatedSignerWithSol } from "@solana/kit-plugin-signer";
 
 // `solanaRpcConnection` installs both `rpc` and `rpcSubscriptions`; the WS URL
 // is derived from `rpcUrl` (override with `rpcSubscriptionsUrl` if needed).
 // Airdrop function must exist before generatedSignerWithSol.
 const client = await createClient()
-  .use(solanaRpcConnection({ rpcUrl: 'http://127.0.0.1:8899' }))
+  .use(solanaRpcConnection({ rpcUrl: "http://127.0.0.1:8899" }))
   .use(rpcAirdrop())
   .use(generatedSignerWithSol(lamports(10_000_000_000n)));
 ```
@@ -135,13 +142,13 @@ const client = await createClient()
 **Role-split example** (different keypairs for fees vs. authority):
 
 ```ts
-import { createClient } from '@solana/kit';
-import { solanaDevnetRpc } from '@solana/kit-plugin-rpc';
-import { payer, identity } from '@solana/kit-plugin-signer';
+import { createClient } from "@solana/kit";
+import { solanaDevnetRpc } from "@solana/kit-plugin-rpc";
+import { payer, identity } from "@solana/kit-plugin-signer";
 
 const client = createClient()
-  .use(payer(feePayerSigner))      // pays fees
-  .use(identity(walletSigner))     // owns/authorizes accounts
+  .use(payer(feePayerSigner)) // pays fees
+  .use(identity(walletSigner)) // owns/authorizes accounts
   .use(solanaDevnetRpc());
 ```
 
@@ -152,25 +159,25 @@ const client = createClient()
 When the all-in-one bundles don't fit (custom transaction planner, partial capabilities, third-party services), build the client out of low-level plugins:
 
 ```ts
-import { createClient } from '@solana/kit';
+import { createClient } from "@solana/kit";
 import {
   rpc,
   rpcAirdrop,
   rpcGetMinimumBalance,
   rpcTransactionPlanner,
   rpcTransactionPlanExecutor,
-} from '@solana/kit-plugin-rpc';
-import { signerFromFile } from '@solana/kit-plugin-signer';
-import { planAndSendTransactions } from '@solana/kit-plugin-instruction-plan';
+} from "@solana/kit-plugin-rpc";
+import { signerFromFile } from "@solana/kit-plugin-signer";
+import { planAndSendTransactions } from "@solana/kit-plugin-instruction-plan";
 
 const client = await createClient()
-  .use(rpc('https://api.devnet.solana.com'))    // adds client.rpc + client.rpcSubscriptions
-  .use(signerFromFile('path/to/keypair.json'))  // adds client.payer + client.identity
-  .use(rpcAirdrop())                             // adds client.airdrop
-  .use(rpcGetMinimumBalance())                   // adds client.getMinimumBalance
-  .use(rpcTransactionPlanner())                  // adds client.transactionPlanner
-  .use(rpcTransactionPlanExecutor())             // adds client.transactionPlanExecutor
-  .use(planAndSendTransactions());               // adds client.sendTransaction(s)
+  .use(rpc("https://api.devnet.solana.com")) // adds client.rpc + client.rpcSubscriptions
+  .use(signerFromFile("path/to/keypair.json")) // adds client.payer + client.identity
+  .use(rpcAirdrop()) // adds client.airdrop
+  .use(rpcGetMinimumBalance()) // adds client.getMinimumBalance
+  .use(rpcTransactionPlanner()) // adds client.transactionPlanner
+  .use(rpcTransactionPlanExecutor()) // adds client.transactionPlanExecutor
+  .use(planAndSendTransactions()); // adds client.sendTransaction(s)
 ```
 
 ### Plugin Ordering
@@ -197,7 +204,7 @@ Some plugins are async (e.g., `signerFromFile`, `generatedSigner`, `generatedSig
 
 ```ts
 const client = await createClient()
-  .use(signerFromFile('./keypair.json'))        // async
+  .use(signerFromFile("./keypair.json")) // async
   .use(solanaLocalRpc());
 ```
 
@@ -207,43 +214,49 @@ const client = await createClient()
 
 ### Official Plugins
 
-| Package | Plugins | Purpose |
-|---------|---------|---------|
-| `@solana/kit-plugin-rpc` | `solanaRpc`, `solanaMainnetRpc`, `solanaDevnetRpc`, `solanaLocalRpc`, `rpc`, `solanaRpcConnection`, `rpcAirdrop`, `rpcGetMinimumBalance`, `rpcTransactionPlanner`, `rpcTransactionPlanExecutor` | RPC connectivity + tx planning/execution |
-| `@solana/kit-plugin-signer` | `signer*` (default — sets both roles), `payer*`, `identity*` (role-specific); each comes in plain, `generated*`, `*WithSol`, `*FromFile`, and `airdrop*` forms | Signer management |
-| `@solana/kit-plugin-litesvm` | `litesvm`, `litesvmConnection`, `litesvmAirdrop`, `litesvmTransactionPlanner`, `litesvmTransactionPlanExecutor` | In-memory test environment |
-| `@solana/kit-plugin-airdrop` | `airdrop`, `rpcAirdrop` | SOL faucet (typically pulled in transitively) |
-| `@solana/kit-plugin-instruction-plan` | `planAndSendTransactions` | Instruction batching + sending sugar |
+| Package                               | Plugins                                                                                                                                                                                         | Purpose                                       |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `@solana/kit-plugin-rpc`              | `solanaRpc`, `solanaMainnetRpc`, `solanaDevnetRpc`, `solanaLocalRpc`, `rpc`, `solanaRpcConnection`, `rpcAirdrop`, `rpcGetMinimumBalance`, `rpcTransactionPlanner`, `rpcTransactionPlanExecutor` | RPC connectivity + tx planning/execution      |
+| `@solana/kit-plugin-signer`           | `signer*` (default — sets both roles), `payer*`, `identity*` (role-specific); each comes in plain, `generated*`, `*WithSol`, `*FromFile`, and `airdrop*` forms                                  | Signer management                             |
+| `@solana/kit-plugin-litesvm`          | `litesvm`, `litesvmConnection`, `litesvmAirdrop`, `litesvmTransactionPlanner`, `litesvmTransactionPlanExecutor`                                                                                 | In-memory test environment                    |
+| `@solana/kit-plugin-airdrop`          | `airdrop`, `rpcAirdrop`                                                                                                                                                                         | SOL faucet (typically pulled in transitively) |
+| `@solana/kit-plugin-instruction-plan` | `planAndSendTransactions`                                                                                                                                                                       | Instruction batching + sending sugar          |
 
 ### Program Plugins
 
 Codama-generated `@solana-program/*` packages also export program plugins that attach fluent APIs to the client:
 
 ```ts
-import { createClient } from '@solana/kit';
-import { solanaLocalRpc } from '@solana/kit-plugin-rpc';
-import { signerFromFile } from '@solana/kit-plugin-signer';
-import { tokenProgram } from '@solana-program/token';
+import { createClient } from "@solana/kit";
+import { solanaLocalRpc } from "@solana/kit-plugin-rpc";
+import { signerFromFile } from "@solana/kit-plugin-signer";
+import { tokenProgram } from "@solana-program/token";
 
 const client = await createClient()
-  .use(signerFromFile('~/.config/solana/id.json'))
+  .use(signerFromFile("~/.config/solana/id.json"))
   .use(solanaLocalRpc())
   .use(tokenProgram());
 
 // Fluent API — auto-derives ATAs, defaults payer from client
 await client.token.instructions
-  .transferToATA({ mint, authority: ownerSigner, recipient, amount: 50n, decimals: 2 })
+  .transferToATA({
+    mint,
+    authority: ownerSigner,
+    recipient,
+    amount: 50n,
+    decimals: 2,
+  })
   .sendTransaction();
 ```
 
-| Package | Plugin | Adds |
-|---------|--------|------|
+| Package                 | Plugin           | Adds                                                                     |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------ |
 | `@solana-program/token` | `tokenProgram()` | `client.token.instructions` (createMint, mintToATA, transferToATA, etc.) |
 
 ### Example Implementations
 
-| Package | Exports | Purpose | Code Example |
-|---------|---------|---------|--------------|
+| Package        | Exports                             | Purpose              | Code Example                                                                 |
+| -------------- | ----------------------------------- | -------------------- | ---------------------------------------------------------------------------- |
 | `@solana/kora` | `createKitKoraClient`, `koraPlugin` | Gasless transactions | https://github.com/solana-foundation/kora/blob/main/sdks/ts/src/kit/index.ts |
 
 ---
@@ -255,8 +268,10 @@ See [advanced.md](advanced.md) for the full guide on authoring plugins and assem
 A plugin is a function that takes a client and returns a new one:
 
 ```ts
-type ClientPlugin<TInput extends object, TOutput extends Promise<object> | object> =
-  (input: TInput) => TOutput;
+type ClientPlugin<
+  TInput extends object,
+  TOutput extends Promise<object> | object,
+> = (input: TInput) => TOutput;
 ```
 
 Quick example:
@@ -265,7 +280,7 @@ Quick example:
 function myCustomPlugin() {
   return <T extends object>(client: T) => ({
     ...client,
-    myMethod: () => console.log('hello'),
+    myMethod: () => console.log("hello"),
   });
 }
 

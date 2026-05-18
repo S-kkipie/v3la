@@ -1,9 +1,99 @@
 "use client";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useWalletConnection } from "@solana/react-hooks";
+import { EmbeddedWalletButton } from "@/frontend/components/wallet/EmbeddedWalletButton";
+import { EmbeddedWalletClient } from "@/frontend/wallet/client";
+import { authClient } from "@/frontend/auth/auth";
 
 export default function Home() {
   const { connectors, connect, disconnect, wallet, status } =
     useWalletConnection();
+
+  const [embeddedConnected, setEmbeddedConnected] = useState(false);
+  const [embeddedAddress, setEmbeddedAddress] = useState<string | null>(null);
+  const [embeddedConnecting, setEmbeddedConnecting] = useState(false);
+  const [embeddedError, setEmbeddedError] = useState<string | null>(null);
+  const [showIframe, setShowIframe] = useState(false);
+  const [iframeUserId, setIframeUserId] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const walletClientRef = useRef<EmbeddedWalletClient | null>(null);
+
+  const preconnectIframe = useCallback(async () => {
+    if (showIframe || iframeRef.current) return;
+    try {
+      const session = await authClient.getSession();
+      const userId = session.data?.user?.id;
+      if (userId) setIframeUserId(userId);
+    } catch {
+      /* silent - connect button handles fallback */
+    }
+  }, [showIframe]);
+
+  useEffect(() => {
+    walletClientRef.current = new EmbeddedWalletClient();
+    return () => {
+      walletClientRef.current?.disconnect();
+    };
+  }, []);
+
+  const handleEmbeddedConnect = async () => {
+    setEmbeddedError(null);
+    setEmbeddedConnecting(true);
+
+    try {
+      const session = await authClient.getSession();
+      const userId = session.data?.user?.id;
+
+      if (!userId) {
+        setEmbeddedError("Please sign in with Better Auth first");
+        setEmbeddedConnecting(false);
+        return;
+      }
+
+      setIframeUserId(userId);
+      setShowIframe(true);
+    } catch (error) {
+      console.error("Failed to get session:", error);
+      setEmbeddedError(
+        error instanceof Error ? error.message : "Failed to get user session",
+      );
+      setEmbeddedConnecting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      showIframe &&
+      iframeRef.current &&
+      walletClientRef.current &&
+      iframeUserId
+    ) {
+      walletClientRef.current
+        .connect(iframeRef.current)
+        .then((address) => {
+          setEmbeddedAddress(address);
+          setEmbeddedConnected(true);
+          setEmbeddedConnecting(false);
+          setEmbeddedError(null);
+        })
+        .catch((error) => {
+          console.error("Failed to connect embedded wallet:", error);
+          setEmbeddedError(
+            error instanceof Error ? error.message : "Failed to connect wallet",
+          );
+          setEmbeddedConnecting(false);
+        });
+    }
+  }, [showIframe, iframeUserId]);
+
+  const handleEmbeddedDisconnect = () => {
+    walletClientRef.current?.disconnect();
+    setEmbeddedConnected(false);
+    setEmbeddedAddress(null);
+    setShowIframe(false);
+    setIframeUserId(null);
+    setEmbeddedError(null);
+  };
 
   const address = wallet?.account.address.toString();
 
@@ -99,10 +189,9 @@ export default function Home() {
         <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <p className="text-lg font-semibold">Wallet connection</p>
+              <p className="text-lg font-semibold">External Wallets</p>
               <p className="text-sm text-muted">
-                Pick any discovered connector and manage connect / disconnect in
-                one spot.
+                Connect using Phantom, Solflare, or another browser extension.
               </p>
             </div>
             <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-secondary-foreground/80">
@@ -148,6 +237,58 @@ export default function Home() {
             >
               Disconnect
             </button>
+          </div>
+        </section>
+
+        <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-lg font-semibold">Embedded Wallet</p>
+              <p className="text-sm text-muted">
+                Passkey-based wallet secured by WebAuthn. No browser extension
+                required.
+              </p>
+            </div>
+            <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-secondary-foreground/80">
+              {embeddedConnected ? "Connected" : "Not connected"}
+            </span>
+          </div>
+
+          {embeddedError && (
+            <p className="text-sm text-destructive">{embeddedError}</p>
+          )}
+
+          {showIframe && iframeUserId && (
+            <iframe
+              ref={iframeRef}
+              src={`/wallet/iframe?userId=${encodeURIComponent(iframeUserId)}`}
+              sandbox="allow-scripts allow-same-origin"
+              title="VELA Wallet Iframe"
+              data-testid="wallet-iframe"
+              className="w-full h-[400px] rounded-xl border border-border bg-background"
+            />
+          )}
+
+          <div className="flex flex-col gap-3">
+            <EmbeddedWalletButton
+              onConnect={handleEmbeddedConnect}
+              onDisconnect={handleEmbeddedDisconnect}
+              isConnected={embeddedConnected}
+              isConnecting={embeddedConnecting}
+              address={embeddedAddress}
+              onMouseEnter={preconnectIframe}
+            />
+
+            {embeddedConnected && (
+              <button
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium transition hover:-translate-y-0.5 hover:shadow-sm cursor-pointer"
+                disabled
+                title="Send SOL - Coming in Task 16"
+                data-testid="send-sol-button"
+              >
+                Send SOL
+              </button>
+            )}
           </div>
         </section>
       </main>

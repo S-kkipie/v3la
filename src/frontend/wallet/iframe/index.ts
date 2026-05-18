@@ -1,0 +1,1 @@
+export { WalletIframe } from "./WalletIframe";

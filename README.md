@@ -7,8 +7,8 @@
 [![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Integrated-000?logo=elevenlabs)](https://elevenlabs.io)
 
 **Live Demo:** [velaweb3.lovable.app](https://velaweb3.lovable.app)  
-**Devnet Program IDs:** *Próximamente tras deploy*  
-**Demo Video:** *Link de YouTube/Vimeo (máx. 3 min)*
+**Devnet Program IDs:** _Próximamente tras deploy_  
+**Demo Video:** _Link de YouTube/Vimeo (máx. 3 min)_
 
 ---
 
@@ -47,12 +47,12 @@ VELA es una plataforma de **lending DeFi nativa en Solana** diseñada para empre
 
 Millones de emprendedores en Latinoamérica enfrentan barreras sistémicas:
 
-| Barrera | Impacto |
-|---------|---------|
-| **Sin acceso a crédito** | Los bancos tradicionales piden requisitos imposibles para negocios informales. |
-| **Financiamiento riesgoso** | Prestamistas informales cobran tasas abusivas (hasta 20% mensual) sin transparencia. |
-| **Tecnología compleja** | DeFi y Web3 son inaccesibles para emprendedores sin background técnico. |
-| **Sin historial crediticio** | No hay mecanismo para construir reputación financiera fuera del sistema bancario. |
+| Barrera                      | Impacto                                                                              |
+| ---------------------------- | ------------------------------------------------------------------------------------ |
+| **Sin acceso a crédito**     | Los bancos tradicionales piden requisitos imposibles para negocios informales.       |
+| **Financiamiento riesgoso**  | Prestamistas informales cobran tasas abusivas (hasta 20% mensual) sin transparencia. |
+| **Tecnología compleja**      | DeFi y Web3 son inaccesibles para emprendedores sin background técnico.              |
+| **Sin historial crediticio** | No hay mecanismo para construir reputación financiera fuera del sistema bancario.    |
 
 En Perú, el 70% de las MYPES no acceden a financiamiento formal. VELA cambia esto.
 
@@ -159,15 +159,15 @@ En Perú, el 70% de las MYPES no acceden a financiamiento formal. VELA cambia es
 
 ### Componentes Clave
 
-| Componente | Tecnología | Rol |
-|------------|-----------|-----|
-| **Frontend** | Next.js 14 + Tailwind CSS | UI/UX responsive, wallet connection |
-| **Wallet** | @solana/kit | Conexión non-custodial (Phantom/Solflare) |
-| **Agente IA** | Gemini API + ElevenLabs | Chat/voz para onboarding y soporte |
-| **Identidad** | SUNAT API (Perú) | Validación de RUC y datos fiscales |
-| **Blockchain** | Solana Devnet | Transacciones rápidas y baratas |
-| **Smart Contracts** | Anchor Framework | Lógica de lending, identidad y scoring |
-| **Tokens** | USDC (SPL) | Moneda estable para préstamos |
+| Componente          | Tecnología                | Rol                                       |
+| ------------------- | ------------------------- | ----------------------------------------- |
+| **Frontend**        | Next.js 14 + Tailwind CSS | UI/UX responsive, wallet connection       |
+| **Wallet**          | @solana/kit               | Conexión non-custodial (Phantom/Solflare) |
+| **Agente IA**       | Gemini API + ElevenLabs   | Chat/voz para onboarding y soporte        |
+| **Identidad**       | SUNAT API (Perú)          | Validación de RUC y datos fiscales        |
+| **Blockchain**      | Solana Devnet             | Transacciones rápidas y baratas           |
+| **Smart Contracts** | Anchor Framework          | Lógica de lending, identidad y scoring    |
+| **Tokens**          | USDC (SPL)                | Moneda estable para préstamos             |
 
 ---
 
@@ -195,29 +195,30 @@ pub struct BusinessIdentity {
 
 **Instrucciones:**
 
-| Instrucción | Parámetros | Descripción |
-|-------------|-----------|-------------|
-| `register_identity` | `ruc: String`, `business_name: String` | Crea identidad vinculada a la wallet firmante. Requiere verificación off-chain con SUNAT. |
-| `verify_sunat` | `ruc: String` | Marca la identidad como verificada (ejecutado por autoridad VELA tras validación). |
-| `update_business_data` | `new_name: String` | Actualiza datos del negocio. |
+| Instrucción            | Parámetros                             | Descripción                                                                               |
+| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `register_identity`    | `ruc: String`, `business_name: String` | Crea identidad vinculada a la wallet firmante. Requiere verificación off-chain con SUNAT. |
+| `verify_sunat`         | `ruc: String`                          | Marca la identidad como verificada (ejecutado por autoridad VELA tras validación).        |
+| `update_business_data` | `new_name: String`                     | Actualiza datos del negocio.                                                              |
 
 **Seguridad:**
+
 - Un RUC solo puede vincularse a una wallet.
 - Solo la autoridad VELA puede marcar `sunat_verified = true`.
 - PDA derivado de `[
-  
 
 #[account]
 pub struct VelaScore {
-    pub owner: Pubkey,              // Wallet del emprendedor
-    pub score: u8,                  // 0-100
-    pub loan_count: u32,            // Número de préstamos completados
-    pub total_borrowed: u64,        // Total histórico solicitado (lamports)
-    pub total_repaid: u64,          // Total histórico pagado
-    pub streak_months: u8,          // Meses consecutivos de pagos puntuales
-    pub last_updated: i64,          // Timestamp
-    pub bump: u8,
+pub owner: Pubkey, // Wallet del emprendedor
+pub score: u8, // 0-100
+pub loan_count: u32, // Número de préstamos completados
+pub total_borrowed: u64, // Total histórico solicitado (lamports)
+pub total_repaid: u64, // Total histórico pagado
+pub streak_months: u8, // Meses consecutivos de pagos puntuales
+pub last_updated: i64, // Timestamp
+pub bump: u8,
 }
+
 ```
 
 **Instrucciones:**
@@ -232,13 +233,17 @@ pub struct VelaScore {
 **Fórmula de Scoring (Off-chain → On-chain):**
 
 ```
+
 score_base = 40
-+ (antigüedad_ruc_años * 5)          // Máx +20
-+ (streak_meses * 3)                 // Máx +30
-+ (loan_count * 2)                   // Máx +10
-- (default_count * 20)               // Penalización
-= Score final (0-100)
-```
+
+- (antigüedad_ruc_años \* 5) // Máx +20
+- (streak_meses \* 3) // Máx +30
+- (loan_count \* 2) // Máx +10
+
+* (default_count \* 20) // Penalización
+  = Score final (0-100)
+
+````
 
 **PDA:** `["vela_score", owner_pubkey]`
 
@@ -270,27 +275,28 @@ pub enum LoanStatus {
     Repaid,       // Completamente pagado
     Defaulted,    // Incumplimiento
 }
-```
+````
 
 **Instrucciones:**
 
-| Instrucción | Parámetros | Descripción |
-|-------------|-----------|-------------|
-| `request_loan` | `amount: u64`, `term: u8` | Crea solicitud. Valida límite según VelaScore. |
-| `approve_loan` | `loan_id: u64` | Aprueba y desembolsa (autoridad VELA o lógica automática). |
-| `make_payment` | `loan_id: u64`, `amount: u64` | Registra pago parcial o total. |
-| `liquidate` | `loan_id: u64` | Marca como defaulted si pasa X días de vencimiento. |
+| Instrucción    | Parámetros                    | Descripción                                                |
+| -------------- | ----------------------------- | ---------------------------------------------------------- |
+| `request_loan` | `amount: u64`, `term: u8`     | Crea solicitud. Valida límite según VelaScore.             |
+| `approve_loan` | `loan_id: u64`                | Aprueba y desembolsa (autoridad VELA o lógica automática). |
+| `make_payment` | `loan_id: u64`, `amount: u64` | Registra pago parcial o total.                             |
+| `liquidate`    | `loan_id: u64`                | Marca como defaulted si pasa X días de vencimiento.        |
 
 **Límites por Score:**
 
-| VelaScore | Límite Máximo | Tasa Mensual |
-|-----------|--------------|--------------|
-| 0-49 (Nuevo) | $50 USDC | 4.0% |
-| 50-69 (Bronce) | $200 USDC | 3.5% |
-| 70-84 (Plata) | $500 USDC | 3.0% |
-| 85-100 (Oro) | $1,500 USDC | 2.5% |
+| VelaScore      | Límite Máximo | Tasa Mensual |
+| -------------- | ------------- | ------------ |
+| 0-49 (Nuevo)   | $50 USDC      | 4.0%         |
+| 50-69 (Bronce) | $200 USDC     | 3.5%         |
+| 70-84 (Plata)  | $500 USDC     | 3.0%         |
+| 85-100 (Oro)   | $1,500 USDC   | 2.5%         |
 
 **Flujo de Fondos:**
+
 1. VELA mantiene un **Liquidity Pool** (cuenta PDA) con capital semilla.
 2. Al aprobarse un préstamo, el programa transfiere USDC del pool a la wallet del borrower.
 3. Los pagos del borrower retornan al pool (menos fee de VELA: 1%).
@@ -306,15 +312,18 @@ pub enum LoanStatus {
 **Uso:** El agente IA de VELA usa ElevenLabs para generar voz natural en español durante el onboarding y soporte.
 
 **Flujo:**
+
 1. Usuario interactúa con el chatbot (Gemini).
 2. Respuestas clave (bienvenida, explicaciones, alertas) se convierten a voz vía ElevenLabs API.
 3. Se reproduce en el frontend usando Web Audio API.
 
 **Endpoints:**
+
 - `POST /api/elevenlabs/tts` — Text-to-Speech
 - `POST /api/elevenlabs/voice-settings` — Configuración de voz (idioma, tono)
 
 **Configuración:**
+
 - Modelo: `eleven_multilingual_v2`
 - Voz: Custom clone o voz predefinida en español latinoamericano
 - Latencia: Streaming para respuestas en tiempo real
@@ -324,6 +333,7 @@ pub enum LoanStatus {
 **Uso:** Validación de RUC y extracción de datos del negocio.
 
 **Datos extraídos:**
+
 - Razón social y nombre comercial
 - Estado del contribuyente (activo/inactivo)
 - Condición (habido/no habido)
@@ -331,6 +341,7 @@ pub enum LoanStatus {
 - Fecha de inscripción
 
 **Flujo:**
+
 1. Usuario ingresa RUC (11 dígitos).
 2. Backend consulta API pública de SUNAT.
 3. Si es válido, se almacenan datos y se genera identidad on-chain.
@@ -343,12 +354,14 @@ pub enum LoanStatus {
 **Uso:** Backend del agente IA para lógica conversacional, análisis financiero y generación de respuestas.
 
 **Capacidades:**
+
 - **Onboarding:** Preguntas dinámicas basadas en respuestas previas.
 - **Soporte:** Responde dudas sobre pagos, tasas, wallets.
 - **Alertas:** Genera recordatorios personalizados de fechas de pago.
 - **Análisis:** Recomienda montos de préstamo óptimos según flujo de caja declarado.
 
 **Prompt System:**
+
 ```
 Eres VELA, un asistente financiero para emprendedores peruanos.
 Hablas español claro, sin tecnicismos.
@@ -361,23 +374,24 @@ Nunca des asesoría de inversión. Sé empático y alentador.
 
 ## Stack Tecnológico
 
-| Capa | Tecnología |
-|------|-----------|
-| **Frontend** | Next.js 14, React, Tailwind CSS, Framer Motion |
-| **Wallet** | @solana/kit, Phantom/Solflare adapters |
-| **Smart Contracts** | Rust, Anchor Framework v0.30 |
-| **Blockchain** | Solana Devnet (mainnet post-hackathon) |
-| **Token** | USDC (SPL Token) |
-| **Agente IA** | Gemini 1.5 Pro (texto), ElevenLabs (voz) |
-| **Identidad** | SUNAT API (Perú) |
-| **Almacenamiento** | PostgreSQL (datos off-chain), Arweave/IPFS (documentos) |
-| **Hosting** | Vercel |
+| Capa                | Tecnología                                              |
+| ------------------- | ------------------------------------------------------- |
+| **Frontend**        | Next.js 14, React, Tailwind CSS, Framer Motion          |
+| **Wallet**          | @solana/kit, Phantom/Solflare adapters                  |
+| **Smart Contracts** | Rust, Anchor Framework v0.30                            |
+| **Blockchain**      | Solana Devnet (mainnet post-hackathon)                  |
+| **Token**           | USDC (SPL Token)                                        |
+| **Agente IA**       | Gemini 1.5 Pro (texto), ElevenLabs (voz)                |
+| **Identidad**       | SUNAT API (Perú)                                        |
+| **Almacenamiento**  | PostgreSQL (datos off-chain), Arweave/IPFS (documentos) |
+| **Hosting**         | Vercel                                                  |
 
 ---
 
 ## Roadmap
 
 ### Fase 1: MVP — Hackathon (Ahora)
+
 - [x] Landing page y diseño de marca
 - [ ] Smart contracts documentados (identity, lending, score)
 - [ ] Deploy en Solana Devnet
@@ -387,6 +401,7 @@ Nunca des asesoría de inversión. Sé empático y alentador.
 - [ ] Demo funcional (solicitud de préstamo simulado)
 
 ### Fase 2: Lanzamiento Beta (3 meses post-hackathon)
+
 - [ ] Integración SUNAT API (validación RUC en producción)
 - [ ] Sistema de scoring automático con datos reales
 - [ ] Préstamos reales en Devnet con capital semilla
@@ -394,6 +409,7 @@ Nunca des asesoría de inversión. Sé empático y alentador.
 - [ ] KYC ligero (documento de identidad)
 
 ### Fase 3: Crecimiento (6-12 meses)
+
 - [ ] Lanzamiento en Solana Mainnet
 - [ ] Token nativo $VELA (gobierno, staking, recompensas)
 - [ ] Marketplace de prestamistas (liquidity pools externas)
@@ -401,6 +417,7 @@ Nunca des asesoría de inversión. Sé empático y alentador.
 - [ ] Integración con pasarelas de pago fiat (Yape, Plin, PSE)
 
 ### Fase 4: DeFi Completo (12+ meses)
+
 - [ ] VELA DAO: gobernanza descentralizada
 - [ ] Liquidity pools abiertas para cualquier prestamista
 - [ ] Integración cross-chain (Wormhole, deBridge)
@@ -411,49 +428,63 @@ Nunca des asesoría de inversión. Sé empático y alentador.
 ## Hackathon Tracks
 
 ### ✅ Best App Overall on Solana ($10,000 pool)
+
 **Por qué aplicamos:**
+
 - Programa único en Rust/Anchor con lógica de lending real.
 - Deploy en devnet con addresses públicos.
 - Uso intensivo de Solana SDK (`@solana/kit`, SPL Token, PDAs).
 - Caso de uso real e impacto social: financiamiento para emprendedores informales en LATAM.
 
 **Entregables:**
+
 - Repo público con README completo
 - Contratos deployados en devnet
 - Demo video < 3 minutos
 - Demo funcional en vivo
 
 ### ✅ Best ElevenLabs Integration (3 meses Scale tier)
+
 **Por qué aplicamos:**
+
 - El agente IA de VELA usa ElevenLabs como core de la experiencia de usuario.
 - Voz natural en español para onboarding de emprendedores no técnicos.
 - Reduce barreras de adopción: no necesitan leer textos complejos.
 
 **Entregables:**
+
 - README explicando integración exacta (Widget/SDK/API)
 - Demo de flujo de voz en la app
 - Configuración de voz personalizada
 
 ### ❌ Best Cross-Chain Solana UX powered by LI.FI
+
 **Por qué NO aplicamos:**
+
 - VELA es un lending platform local. El core no requiere swaps/bridging cross-chain.
 - Forzar esta integración sería scope innecesario para el MVP.
-- *Futuro:* Podría agregarse para que prestamistas depositen liquidez desde Ethereum/Base.
+- _Futuro:_ Podría agregarse para que prestamistas depositen liquidez desde Ethereum/Base.
 
 ### ❌ Best AI Agent into Physical World
+
 **Por qué NO aplicamos:**
+
 - VELA es 100% software. No hay componente robótico ni físico.
 
 ### ❌ Best Mobile App Built on Solana Mobile
+
 **Por qué NO aplicamos:**
+
 - Actualmente es web app (Next.js). No es APK nativo de Android ni usa Solana Mobile Stack.
-- *Futuro:* Planeamos app móvil nativa en Fase 2.
+- _Futuro:_ Planeamos app móvil nativa en Fase 2.
 
 ### ❓ Best x402 on Solana ($500 bonus)
+
 **Por qué no enfocamos aquí:**
+
 - El modelo de VELA es suscripción anual fija ($15), no streaming de pagos.
 - x402 no encaja naturalmente en el flujo de lending.
-- *Nota:* Podría explorarse para cobro por minuto de consultoría IA, pero no es prioridad.
+- _Nota:_ Podría explorarse para cobro por minuto de consultoría IA, pero no es prioridad.
 
 ---
 
@@ -538,11 +569,11 @@ npm run dev
 
 ### Program IDs (Actualizar tras deploy)
 
-| Programa | Devnet Address | Versión |
-|----------|---------------|---------|
-| `vela_identity` | `TBD` | v0.1.0 |
-| `vela_lending` | `TBD` | v0.1.0 |
-| `vela_score` | `TBD` | v0.1.0 |
+| Programa        | Devnet Address | Versión |
+| --------------- | -------------- | ------- |
+| `vela_identity` | `TBD`          | v0.1.0  |
+| `vela_lending`  | `TBD`          | v0.1.0  |
+| `vela_score`    | `TBD`          | v0.1.0  |
 
 ### Verificar deploy
 
@@ -554,15 +585,15 @@ solana program show <PROGRAM_ID> --url devnet
 
 ## Equipo
 
-**VELA** — *Empoderando emprendedores, un paso a la vez.*
+**VELA** — _Empoderando emprendedores, un paso a la vez._
 
-| Rol | Responsabilidad |
-|-----|----------------|
-| **Producto & Diseño** | UX/UI, estrategia, modelo de negocio |
-| **Smart Contracts** | Rust/Anchor, seguridad, arquitectura on-chain |
-| **Frontend** | Next.js, wallet integration, diseño responsive |
-| **Backend & IA** | Gemini, ElevenLabs, SUNAT API, base de datos |
-| **Growth** | Alianzas, comunidad, expansión LATAM |
+| Rol                   | Responsabilidad                                |
+| --------------------- | ---------------------------------------------- |
+| **Producto & Diseño** | UX/UI, estrategia, modelo de negocio           |
+| **Smart Contracts**   | Rust/Anchor, seguridad, arquitectura on-chain  |
+| **Frontend**          | Next.js, wallet integration, diseño responsive |
+| **Backend & IA**      | Gemini, ElevenLabs, SUNAT API, base de datos   |
+| **Growth**            | Alianzas, comunidad, expansión LATAM           |
 
 ---
 
