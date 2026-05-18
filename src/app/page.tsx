@@ -174,21 +174,21 @@ export default function Home() {
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4">
-                                    <Link href="/register">
-                                        <Button
-                                            size="lg"
-                                            className="rounded-full px-8 text-base"
-                                        >
-                                            Crear mi Perfil Gratis
-                                        </Button>
-                                    </Link>
-                                    <Link
-                                        href="#como-funciona"
-                                        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+                                <Link href="/auth/sign-up">
+                                    <Button
+                                        size="lg"
+                                        className="rounded-full px-8 text-base"
                                     >
-                                        ¿Cómo funciona?
-                                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                                    </Link>
+                                        Crear mi Perfil Gratis
+                                    </Button>
+                                </Link>
+                                <Link
+                                    href="#como-funciona"
+                                    className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+                                >
+                                    ¿Cómo funciona?
+                                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
                                 </div>
 
                                 {/* Trust badges */}
@@ -513,7 +513,7 @@ export default function Home() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link href="/register">
+                                <Link href="/auth/sign-up">
                                     <Button
                                         size="lg"
                                         className="rounded-full px-8 text-base"
@@ -521,13 +521,13 @@ export default function Home() {
                                         Crear mi Perfil Gratis
                                     </Button>
                                 </Link>
-                                <Link href="/login">
+                                <Link href="/auth/sign-in">
                                     <Button
                                         variant="outline"
                                         size="lg"
                                         className="rounded-full px-8 text-base"
                                     >
-                                        Hablar con el agente IA
+                                        Iniciar sesión
                                     </Button>
                                 </Link>
                             </div>

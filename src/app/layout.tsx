@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 import { cn } from "@/frontend/lib/utils";
 import Providers from "@/frontend/providers/providers";
@@ -33,7 +34,9 @@ export default function RootLayout({
                 suppressHydrationWarning
                 className={`${geist.variable} ${geistMono.variable} antialiased`}
             >
-                <Providers>{children}</Providers>
+                <NuqsAdapter>
+                    <Providers>{children}</Providers>
+                </NuqsAdapter>
             </body>
         </html>
     );

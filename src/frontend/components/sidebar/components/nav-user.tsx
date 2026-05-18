@@ -1,13 +1,13 @@
 "use client";
 
 import { SidebarMenu, SidebarMenuItem } from "@/frontend/components/ui/sidebar";
-import { UserButton } from "../../auth/user-button";
+import { UserButton } from "@/frontend/components/auth/user/user-button";
 
 export function NavUser() {
     return (
         <SidebarMenu>
             <SidebarMenuItem>
-                <UserButton size="lg" />
+                <UserButton size="default" />
             </SidebarMenuItem>
         </SidebarMenu>
     );

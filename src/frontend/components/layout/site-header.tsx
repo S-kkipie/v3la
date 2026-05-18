@@ -2,11 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import React, { type ReactElement, useEffect, useState } from "react";
-import { UserButton } from "@/frontend/auth/components/user-button";
+import { UserButton } from "@/frontend/components/auth/user/user-button";
 import { Separator } from "@/frontend/components/ui/separator";
 import { SidebarTrigger } from "@/frontend/components/ui/sidebar";
 import { useAuth } from "@/frontend/context/auth-context";
-import { Badge } from "../ui/badge";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -16,25 +15,6 @@ import {
     BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 
-/**
- * Maps user roles to their default landing page.
- * Role values match the keys defined in the Better Auth admin plugin config.
- */
-const roleDashboardMap: Record<string, string> = {
-    superAdmin: "/admin",
-    admin: "/admin",
-    professor: "/professor",
-    student: "/student",
-};
-
-/**
- * Resolves the default dashboard path for a given user role.
- *
- * @param role - The user's role string from the session
- * @returns The dashboard URL path, defaults to `/`
- */
-const getDashboardPath = (role: string | null | undefined): string =>
-    role && roleDashboardMap[role] ? roleDashboardMap[role] : "/";
 
 export function SiteHeader({ home }: { home?: boolean }) {
     const pathname = usePathname();
@@ -122,7 +102,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href={getDashboardPath(user.role)}>
+                            <BreadcrumbLink href="/app">
                                 Inicio
                             </BreadcrumbLink>
                         </BreadcrumbItem>
@@ -133,11 +113,11 @@ export function SiteHeader({ home }: { home?: boolean }) {
                 </Breadcrumb>
                 <div className="ml-auto flex items-center gap-2">
                     {home && <UserButton size="icon" />}
-                    {user.role && (
+                    {/* {user.role && (
                         <Badge variant="secondary">
                             {user.role.toLocaleUpperCase()}
                         </Badge>
-                    )}
+                    )} */}
                 </div>
             </div>
         </header>

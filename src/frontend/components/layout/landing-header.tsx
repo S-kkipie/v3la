@@ -46,12 +46,12 @@ export function LandingHeader() {
 
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center gap-3">
-                    <Link href="/login">
+                    <Link href="/auth/sign-in">
                         <Button variant="outline" size="sm">
-                            Demo
+                            Iniciar sesión
                         </Button>
                     </Link>
-                    <Link href="/login">
+                    <Link href="/auth/sign-up">
                         <Button size="sm">Empezar Ahora</Button>
                     </Link>
                 </div>
@@ -87,18 +87,18 @@ export function LandingHeader() {
                             </nav>
                             <div className="flex flex-col gap-3 pt-4 border-t border-border">
                                 <Link
-                                    href="/login"
+                                    href="/auth/sign-in"
                                     onClick={() => setOpen(false)}
                                 >
                                     <Button
                                         variant="outline"
                                         className="w-full"
                                     >
-                                        Demo
+                                        Iniciar sesión
                                     </Button>
                                 </Link>
                                 <Link
-                                    href="/register"
+                                    href="/auth/sign-up"
                                     onClick={() => setOpen(false)}
                                 >
                                     <Button className="w-full">
