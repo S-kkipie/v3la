@@ -76,9 +76,7 @@ export const OpenAPI = {
  */
 export const authenticate = cache(async () => {
     try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
+        const session = await auth.api.getSession({ headers: await headers() });
 
         if (!session) {
             return null;
@@ -98,3 +96,28 @@ export const authenticate = cache(async () => {
         return null;
     }
 });
+
+export async function authenticateFromHeaders(requestHeaders: Headers) {
+    try {
+        const session = await auth.api.getSession({
+            headers: requestHeaders,
+        });
+
+        if (!session) {
+            return null;
+        }
+
+        return {
+            user: session.user,
+            session: session.session,
+        };
+    } catch (e) {
+        if (e instanceof APIError) {
+            logger.warn("API ERROR, auth error: {error}", { error: e });
+            return null;
+        }
+
+        logger.error("Authentication error: {error}", { error: e });
+        return null;
+    }
+}

@@ -1,5 +1,9 @@
 import { makePrfSalt } from "../../crypto/prf-solana";
 import { PrfNotSupportedError, UserRejectedError } from "../errors";
+import {
+    getWebAuthnCapabilities,
+    PRF_CAPABILITY_KEY,
+} from "../webauthn-capabilities";
 
 const textEncoder = new TextEncoder();
 const RP_NAME = "vela";
@@ -57,26 +61,13 @@ function ensureBrowserSupport(): void {
 
 async function ensurePrfSupport(): Promise<void> {
     ensureBrowserSupport();
+    const capabilities = await getWebAuthnCapabilities();
 
-    const maybeWithCapabilities =
-        PublicKeyCredential as typeof PublicKeyCredential & {
-            getClientCapabilities?: () => Promise<Record<string, boolean>>;
-        };
-
-    if (typeof maybeWithCapabilities.getClientCapabilities === "function") {
-        const capabilities =
-            await maybeWithCapabilities.getClientCapabilities();
-        if (!capabilities.prf) {
-            throw new PrfNotSupportedError(
-                "Your authenticator does not support the PRF extension. Please use a compatible device.",
-            );
-        }
-        return;
+    if (!capabilities?.[PRF_CAPABILITY_KEY]) {
+        throw new PrfNotSupportedError(
+            "Your browser or authenticator does not support the PRF extension. Please use a compatible device.",
+        );
     }
-
-    throw new PrfNotSupportedError(
-        "Cannot verify WebAuthn PRF support in this browser. Please use Chrome 132+.",
-    );
 }
 
 function randomBytes(length: number): Uint8Array {

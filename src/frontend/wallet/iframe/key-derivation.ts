@@ -1,5 +1,5 @@
 import { type Keypair, Transaction } from "@solana/web3.js";
-import { deriveWalletFromPrf } from "../../crypto/prf-solana";
+import { deriveWalletFromSeed } from "../../crypto/prf-solana";
 
 /**
  * Module-level state for the derived wallet.
@@ -10,28 +10,24 @@ let derivedKeypair: Keypair | null = null;
 let walletAddress: string | null = null;
 
 /**
- * Derives a deterministic Solana wallet from PRF output and userId.
+ * Hydrates a Solana wallet from a 32-byte master seed.
  * Stores the keypair in module-level closure memory.
- * Zeros out the PRF output buffer after derivation.
+ * Zeros out the seed buffer after derivation.
  *
- * @param userId - Unique user identifier
- * @param prfOutput - Raw PRF output from WebAuthn (ArrayBuffer, >= 32 bytes)
+ * @param masterSeed - 32-byte master seed
  * @returns Base58-encoded wallet address
  */
-export function deriveWallet(userId: string, prfOutput: ArrayBuffer): string {
-    if (!userId || typeof userId !== "string" || userId.length === 0) {
-        throw new Error("userId must be a non-empty string");
-    }
-    if (!prfOutput || !(prfOutput instanceof ArrayBuffer)) {
-        throw new Error("prfOutput must be a valid ArrayBuffer");
+export function hydrateWalletFromSeed(masterSeed: ArrayBuffer): string {
+    if (!masterSeed || !(masterSeed instanceof ArrayBuffer)) {
+        throw new Error("masterSeed must be a valid ArrayBuffer");
     }
 
-    const keypair = deriveWalletFromPrf(prfOutput, userId);
+    const keypair = deriveWalletFromSeed(masterSeed);
     derivedKeypair = keypair;
     walletAddress = keypair.publicKey.toBase58();
 
-    // Zero out the PRF output ArrayBuffer after derivation
-    const view = new Uint8Array(prfOutput);
+    // Zero out the master seed ArrayBuffer after derivation
+    const view = new Uint8Array(masterSeed);
     view.fill(0);
 
     return walletAddress;
@@ -43,6 +39,11 @@ export function getWalletAddress(): string | null {
 
 export function isWalletReady(): boolean {
     return derivedKeypair !== null && walletAddress !== null;
+}
+
+export function clearWallet(): void {
+    derivedKeypair = null;
+    walletAddress = null;
 }
 
 /**

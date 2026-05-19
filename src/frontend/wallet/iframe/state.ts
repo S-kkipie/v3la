@@ -4,6 +4,7 @@ export type WalletStatus =
     | "IDLE"
     | "AUTHENTICATING"
     | "DERIVING"
+    | "PROVISIONING"
     | "READY"
     | "SIGNING"
     | "ERROR";

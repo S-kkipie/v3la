@@ -37,6 +37,13 @@ function zeroBuffer(buffer: Uint8Array): void {
     buffer.fill(0);
 }
 
+function validateMasterSeed(seed: ArrayBuffer | Uint8Array): void {
+    const bytes = toUint8Array(seed);
+    if (bytes.length !== 32) {
+        throw new Error(`Master seed must be exactly 32 bytes, got ${bytes.length}`);
+    }
+}
+
 export function makePrfSalt(userId: string): Uint8Array {
     if (!userId || typeof userId !== "string" || userId.length === 0) {
         throw new Error("userId must be a non-empty string");
@@ -99,6 +106,13 @@ export function deriveWalletFromPrf(
     zeroBuffer(seed);
 
     return keypair;
+}
+
+export function deriveWalletFromSeed(
+    masterSeed: ArrayBuffer | Uint8Array,
+): Keypair {
+    validateMasterSeed(masterSeed);
+    return Keypair.fromSeed(toUint8Array(masterSeed));
 }
 
 /**

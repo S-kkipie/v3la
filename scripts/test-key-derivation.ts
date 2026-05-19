@@ -51,26 +51,26 @@ async function runTests() {
 
     const mod1 = await import(MODULE_PATH + "?t=1");
     const mod2 = await import(MODULE_PATH + "?t=2");
-    const address1 = mod1.deriveWallet(userId, makePrfBuffer());
-    const address2 = mod2.deriveWallet(userId, makePrfBuffer());
+    const address1 = mod1.hydrateWalletFromSeed(makePrfBuffer());
+    const address2 = mod2.hydrateWalletFromSeed(makePrfBuffer());
     assertEqual(
         address1,
         address2,
-        "Same userId + PRF should produce same address",
+        "Same seed should produce same address",
     );
     assertTrue(address1.length > 0, "Address should be non-empty");
     console.log("✅ Deterministic derivation passed:", address1);
 
     const prfBuf = makePrfBuffer();
     const kd3 = await import(MODULE_PATH + "?t=3");
-    kd3.deriveWallet(userId, prfBuf);
+    kd3.hydrateWalletFromSeed(prfBuf);
     const view = new Uint8Array(prfBuf);
     const allZero = view.every((b) => b === 0);
-    assertTrue(allZero, "PRF output buffer should be zeroed after derivation");
+    assertTrue(allZero, "Master seed buffer should be zeroed after derivation");
     console.log("✅ Buffer clearing passed");
 
     const kd4 = await import(MODULE_PATH + "?t=4");
-    const addr = kd4.deriveWallet(userId, makePrfBuffer());
+    const addr = kd4.hydrateWalletFromSeed(makePrfBuffer());
     const fromPubkey = new PublicKey(addr);
     const toPubkey = new PublicKey("11111111111111111111111111111111");
     const tx = new Transaction().add(
@@ -113,13 +113,14 @@ async function runTests() {
 
     const kd5a = await import(MODULE_PATH + "?t=5a");
     const kd5b = await import(MODULE_PATH + "?t=5b");
-    const addrA = kd5a.deriveWallet("user-a", makePrfBuffer());
-    const addrB = kd5b.deriveWallet("user-b", makePrfBuffer());
+    const addrA = kd5a.hydrateWalletFromSeed(makePrfBuffer());
+    const altSeed = new Uint8Array(32).fill(9).buffer;
+    const addrB = kd5b.hydrateWalletFromSeed(altSeed);
     assertTrue(
         addrA !== addrB,
-        "Different userId should produce different address",
+        "Different seeds should produce different addresses",
     );
-    console.log("✅ Different userId produces different address");
+    console.log("✅ Different seed produces different address");
 
     console.log("\n--- All tests passed ✅ ---");
 }

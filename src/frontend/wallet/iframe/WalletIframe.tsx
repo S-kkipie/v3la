@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/frontend/components/ui/button";
 import {
     Card,
@@ -11,8 +11,19 @@ import {
 } from "@/frontend/components/ui/card";
 import { MessageType } from "../protocol";
 import { ApprovalUI } from "./components/ApprovalUI";
-import { deriveWallet, isWalletReady, signTransaction } from "./key-derivation";
+import {
+    clearWallet,
+    hydrateWalletFromSeed,
+    isWalletReady,
+    signTransaction,
+} from "./key-derivation";
 import { sendToParent, setupMessageHandlers } from "./messaging";
+import {
+    generateMasterSeed,
+    encryptMasterSeed,
+    seedEnvelopeVersions,
+    zeroSensitiveBuffer,
+} from "./seed-envelope";
 import {
     reset,
     setAddress,
@@ -21,6 +32,31 @@ import {
     useWalletState,
 } from "./state";
 import { authenticateAndGetPrf } from "./webauthn-prf";
+
+type WalletIframeMode = "provision";
+
+type WalletIframeParams = {
+    userId: string | null;
+    credentialId: string | null;
+    passkeyId: string | null;
+    mode: WalletIframeMode;
+};
+
+type ProvisionResponse = {
+    response: {
+        walletId: string;
+        publicKey: string;
+        chain: string;
+        status: string;
+        createdAt: string;
+        updatedAt: string;
+        accessId: string;
+        passkeyId: string;
+        credentialId: string;
+    };
+    code: "OK";
+    status: 200;
+};
 
 function createWalletAddressMessage(requestId: string, address: string) {
     return {
@@ -31,8 +67,117 @@ function createWalletAddressMessage(requestId: string, address: string) {
     };
 }
 
+function parseWalletIframeParams(search: string): WalletIframeParams {
+    const params = new URLSearchParams(search);
+    return {
+        userId: params.get("userId"),
+        credentialId: params.get("credentialId"),
+        passkeyId: params.get("passkeyId"),
+        mode: "provision",
+    };
+}
+
+async function provisionWallet(params: {
+    userId: string;
+    credentialId: string;
+    passkeyId: string;
+}): Promise<string> {
+    const { credentialId, passkeyId, userId } = params;
+
+    if (typeof crypto.randomUUID !== "function") {
+        throw new Error("crypto.randomUUID is not available in this browser.");
+    }
+
+    const prfOutput = await authenticateAndGetPrf(userId, credentialId);
+    const walletId = crypto.randomUUID();
+    const generatedSeed = generateMasterSeed();
+    const seedForEnvelope = generatedSeed.slice();
+    const seedForWallet = generatedSeed.slice();
+    zeroSensitiveBuffer(generatedSeed);
+
+    try {
+        const envelope = await encryptMasterSeed(seedForEnvelope, prfOutput, {
+            walletId,
+            userId,
+            credentialId,
+            chain: "solana",
+        });
+        zeroSensitiveBuffer(seedForEnvelope);
+
+        const address = hydrateWalletFromSeed(
+            seedForWallet.buffer.slice(
+                seedForWallet.byteOffset,
+                seedForWallet.byteOffset + seedForWallet.byteLength,
+            ),
+        );
+
+        const response = await fetch("/api/v1/wallet/provision", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                walletId,
+                publicKey: address,
+                passkeyId,
+                wrappedSeed: envelope.wrappedSeed,
+                iv: envelope.iv,
+                aad: envelope.aad,
+                kdfVersion: seedEnvelopeVersions.kdfVersion,
+                cipherVersion: seedEnvelopeVersions.cipherVersion,
+            }),
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            clearWallet();
+            const errorBody = (await response.json().catch(() => null)) as
+                | { code?: string }
+                | null;
+
+            if (response.status === 409) {
+                throw new Error(
+                    "An embedded wallet already exists for this account.",
+                );
+            }
+
+            if (
+                response.status === 400 &&
+                errorBody?.code === "PASSKEY_NOT_FOUND"
+            ) {
+                throw new Error(
+                    "The selected passkey is no longer available for this account.",
+                );
+            }
+
+            if (response.status === 401) {
+                throw new Error(
+                    "Your session expired. Sign in again before creating a wallet.",
+                );
+            }
+
+            throw new Error("Failed to persist the embedded wallet envelope.");
+        }
+
+        const result = (await response.json()) as ProvisionResponse;
+
+        if (result.response.publicKey !== address) {
+            clearWallet();
+            throw new Error(
+                "Wallet address mismatch while provisioning the embedded wallet.",
+            );
+        }
+
+        return address;
+    } finally {
+        zeroSensitiveBuffer(prfOutput);
+        zeroSensitiveBuffer(seedForEnvelope);
+        zeroSensitiveBuffer(seedForWallet);
+    }
+}
+
 export function WalletIframe() {
-    const [userId, setUserId] = useState<string | null>(null);
+    const [params, setParams] = useState<WalletIframeParams | null>(null);
     const state = useWalletState();
     const [pendingApproval, setPendingApproval] = useState<{
         tx: string;
@@ -45,34 +190,46 @@ export function WalletIframe() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const params = new URLSearchParams(window.location.search);
-            setUserId(params.get("userId"));
+            setParams(parseWalletIframeParams(window.location.search));
         }
     }, []);
 
-    const handleConnect = useCallback(async () => {
-        if (!userId) {
-            setError("No userId provided");
+    const canProvision = useMemo(
+        () =>
+            !!params?.userId &&
+            !!params?.credentialId &&
+            !!params?.passkeyId &&
+            params.mode === "provision",
+        [params],
+    );
+
+    const handleProvision = useCallback(async () => {
+        if (!params?.userId || !params.credentialId || !params.passkeyId) {
+            setError("Missing wallet provisioning parameters");
             return;
         }
 
         try {
             setStatus("AUTHENTICATING");
-            const prfOutput = await authenticateAndGetPrf(userId);
-
             setStatus("DERIVING");
-            const address = deriveWallet(userId, prfOutput);
+            const address = await provisionWallet({
+                userId: params.userId,
+                credentialId: params.credentialId,
+                passkeyId: params.passkeyId,
+            });
 
-            setStatus("READY");
+            setStatus("PROVISIONING");
             setAddress(address);
+            setStatus("READY");
 
-            sendToParent(createWalletAddressMessage("init", address));
+            sendToParent(createWalletAddressMessage("provision", address));
         } catch (err) {
+            clearWallet();
             setError(
-                err instanceof Error ? err.message : "Failed to connect wallet",
+                err instanceof Error ? err.message : "Failed to provision wallet",
             );
         }
-    }, [userId]);
+    }, [params]);
 
     useEffect(() => {
         if (state.status !== "READY") {
@@ -98,9 +255,7 @@ export function WalletIframe() {
                     approvalResolveRef.current = resolve;
                 });
             },
-            signTransaction: async (tx) => {
-                return signTransaction(tx);
-            },
+            signTransaction: async (tx) => signTransaction(tx),
             onError: (error) => {
                 console.error("Wallet iframe error:", error);
             },
@@ -129,13 +284,26 @@ export function WalletIframe() {
         }
     };
 
-    if (!userId) {
+    const handleReset = () => {
+        clearWallet();
+        reset();
+    };
+
+    if (!params) {
+        return (
+            <div className="flex min-h-[400px] items-center justify-center p-8">
+                <LoadingCard label="Loading wallet runtime..." />
+            </div>
+        );
+    }
+
+    if (!canProvision) {
         return (
             <div className="flex min-h-[400px] items-center justify-center p-8">
                 <Card className="w-full max-w-sm">
                     <CardContent className="pt-6">
                         <p className="text-center text-destructive">
-                            Missing userId parameter
+                            Missing wallet provisioning parameters
                         </p>
                     </CardContent>
                 </Card>
@@ -160,7 +328,7 @@ export function WalletIframe() {
     if (state.status === "IDLE") {
         return (
             <div className="flex min-h-[400px] items-center justify-center p-8">
-                <IdleCard onConnect={handleConnect} />
+                <IdleCard onProvision={handleProvision} />
             </div>
         );
     }
@@ -168,7 +336,7 @@ export function WalletIframe() {
     if (state.status === "AUTHENTICATING") {
         return (
             <div className="flex min-h-[400px] items-center justify-center p-8">
-                <AuthenticatingCard />
+                <LoadingCard label="Authenticating with passkey..." />
             </div>
         );
     }
@@ -176,7 +344,15 @@ export function WalletIframe() {
     if (state.status === "DERIVING") {
         return (
             <div className="flex min-h-[400px] items-center justify-center p-8">
-                <DerivingCard />
+                <LoadingCard label="Generating wallet seed..." />
+            </div>
+        );
+    }
+
+    if (state.status === "PROVISIONING") {
+        return (
+            <div className="flex min-h-[400px] items-center justify-center p-8">
+                <LoadingCard label="Persisting encrypted wallet envelope..." />
             </div>
         );
     }
@@ -194,7 +370,7 @@ export function WalletIframe() {
             <div className="flex min-h-[400px] items-center justify-center p-8">
                 <ErrorCard
                     error={state.error ?? "Unknown error"}
-                    onReset={reset}
+                    onReset={handleReset}
                 />
             </div>
         );
@@ -204,9 +380,9 @@ export function WalletIframe() {
 }
 
 const IdleCard = memo(function IdleCard({
-    onConnect,
+    onProvision,
 }: {
-    onConnect: () => void;
+    onProvision: () => void;
 }) {
     return (
         <Card className="w-full max-w-sm">
@@ -216,37 +392,26 @@ const IdleCard = memo(function IdleCard({
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground text-center">
-                    Connect your wallet using your passkey
+                <p className="text-center text-sm text-muted-foreground">
+                    Create your embedded wallet with an existing passkey.
                 </p>
                 <Button
-                    onClick={onConnect}
+                    onClick={onProvision}
                     className="w-full"
                     data-testid="connect-passkey"
                 >
-                    Connect with Passkey
+                    Create wallet with passkey
                 </Button>
             </CardContent>
         </Card>
     );
 });
 
-const AuthenticatingCard = memo(function AuthenticatingCard() {
+const LoadingCard = memo(function LoadingCard({ label }: { label: string }) {
     return (
         <div className="flex flex-col items-center gap-2">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-muted-foreground">
-                Authenticating with passkey...
-            </p>
-        </div>
-    );
-});
-
-const DerivingCard = memo(function DerivingCard() {
-    return (
-        <div className="flex flex-col items-center gap-2">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-muted-foreground">Deriving wallet...</p>
+            <p className="text-muted-foreground">{label}</p>
         </div>
     );
 });
@@ -255,20 +420,24 @@ const ReadyCard = memo(function ReadyCard({ address }: { address: string }) {
     return (
         <Card className="w-full max-w-sm">
             <CardHeader>
-                <CardTitle className="text-center">Wallet Connected</CardTitle>
+                <CardTitle className="text-center">Wallet Provisioned</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground text-center">
+                    <p className="text-center text-xs text-muted-foreground">
                         Address
                     </p>
                     <p
-                        className="text-xs font-mono break-all text-center bg-muted p-2 rounded"
+                        className="rounded bg-muted p-2 text-center text-xs font-mono break-all"
                         data-testid="iframe-wallet-address"
                     >
                         {address}
                     </p>
                 </div>
+                <p className="text-center text-xs text-muted-foreground">
+                    The encrypted wallet envelope was stored successfully. Unlock
+                    and reuse flows come next.
+                </p>
             </CardContent>
         </Card>
     );
@@ -283,7 +452,7 @@ const ErrorCard = memo(function ErrorCard({
 }) {
     return (
         <Card className="w-full max-w-sm">
-            <CardContent className="pt-6 space-y-4">
+            <CardContent className="space-y-4 pt-6">
                 <p className="text-center text-destructive">{error}</p>
                 <Button onClick={onReset} className="w-full">
                     Try Again

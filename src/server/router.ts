@@ -8,6 +8,7 @@ import { env } from "@/config/env";
 import ServerConfig from "@/config/server-config";
 import { auth, OpenAPI } from "./auth/auth";
 import type { APIResponse, STATUS_MAP } from "./common/reponses";
+import { walletRouter } from "./wallet/router";
 
 const betterAuth = new Elysia({ name: "better-auth" }).mount(auth.handler);
 
@@ -46,6 +47,7 @@ const app = new Elysia({ prefix: "/api/v1" })
     .use(serverTiming())
     .use(elysiaLogger())
     .onError(({ error, code }) => {
+        console.log(error);
         if (code === "VALIDATION")
             return {
                 code,
@@ -61,7 +63,8 @@ const app = new Elysia({ prefix: "/api/v1" })
             code: "INTERNAL_SERVER_ERROR",
             status: 500,
         } satisfies APIResponse;
-    });
+    })
+    .use(walletRouter);
 
 export default app;
 export type AppRouter = typeof app;

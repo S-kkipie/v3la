@@ -1,20 +1,27 @@
 {
-    "version": "7",
-    "dialect": "postgresql",
-    "entries": [
-        {
-            "idx": 0,
-            "version": "7",
-            "when": 1779068837403,
-            "tag": "0000_old_inhumans",
-            "breakpoints": true
-        },
-        {
-            "idx": 1,
-            "version": "7",
-            "when": 1779119916962,
-            "tag": "0001_loud_bulldozer",
-            "breakpoints": true
-        }
-    ]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1779068837403,
+      "tag": "0000_old_inhumans",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779119916962,
+      "tag": "0001_loud_bulldozer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779197529168,
+      "tag": "0002_light_agent_brand",
+      "breakpoints": true
+    }
+  ]
 }
