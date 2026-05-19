@@ -1,13 +1,12 @@
 "use client";
 
-import { Fingerprint, ShieldAlert, ShieldCheck, Wallet } from "lucide-react";
+import { ShieldAlert, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
     Alert,
     AlertDescription,
     AlertTitle,
 } from "@/frontend/components/ui/alert";
-import { Badge } from "@/frontend/components/ui/badge";
 import {
     Card,
     CardContent,
@@ -255,7 +254,7 @@ export default function WalletPage() {
             credentialId: selectedPasskey.credentialId,
         });
 
-        return `/wallet/iframe?${params.toString()}`;
+        return `/iframe?${params.toString()}`;
     }, [selectedPasskey, shouldShowProvisionIframe, walletReady]);
 
     return (
@@ -270,105 +269,6 @@ export default function WalletPage() {
                         WebAuthn PRF.
                     </p>
                 </div>
-
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between gap-3">
-                            <div>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Fingerprint className="size-4" />
-                                    PRF Compatibility
-                                </CardTitle>
-                                <CardDescription>
-                                    The embedded wallet requires passkeys plus
-                                    WebAuthn PRF support in the current browser
-                                    and authenticator.
-                                </CardDescription>
-                            </div>
-                            <Badge
-                                variant={
-                                    supportState === "supported"
-                                        ? "success"
-                                        : supportState === "unknown"
-                                          ? "secondary"
-                                        : supportState === "checking"
-                                          ? "warning"
-                                          : "destructive"
-                                }
-                            >
-                                {supportState === "checking" && "Checking"}
-                                {supportState === "supported" && "Supported"}
-                                {supportState === "unknown" && "Try Anyway"}
-                                {supportState === "unsupported" && "Not Supported"}
-                                {supportState === "error" && "Check Failed"}
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-3">
-                            <div
-                                className={cn(
-                                    "mt-0.5",
-                                    supportState === "supported" &&
-                                        "text-emerald-600",
-                                    supportState === "unknown" &&
-                                        "text-sky-600",
-                                    supportState !== "supported" &&
-                                        supportState !== "unknown" &&
-                                        "text-amber-600",
-                                )}
-                            >
-                                {supportState === "supported" ? (
-                                    <ShieldCheck className="size-4" />
-                                ) : supportState === "unknown" ? (
-                                    <Fingerprint className="size-4" />
-                                ) : supportState === "checking" ? (
-                                    <Spinner className="size-4" />
-                                ) : (
-                                    <ShieldAlert className="size-4" />
-                                )}
-                            </div>
-                            <div className="space-y-1 text-sm">
-                                <p className="font-medium">
-                                    {supportState === "supported" &&
-                                        "Embedded wallet provisioning can run on this device."}
-                                    {supportState === "unknown" &&
-                                        "Browser capability detection is unavailable, but the PRF flow can still be attempted."}
-                                    {supportState === "checking" &&
-                                        "Checking WebAuthn and PRF capabilities..."}
-                                    {supportState === "unsupported" &&
-                                        "This device cannot use the PRF-based embedded wallet flow yet."}
-                                    {supportState === "error" &&
-                                        "Capability detection failed."}
-                                </p>
-                                {detail ? (
-                                    <p className="text-muted-foreground">
-                                        {detail}
-                                    </p>
-                                ) : null}
-                            </div>
-                        </div>
-
-                        {!iframeEnabled && supportState !== "checking" ? (
-                            <Alert
-                                variant={
-                                    supportState === "error"
-                                        ? "destructive"
-                                        : "default"
-                                }
-                            >
-                                <ShieldAlert className="size-4" />
-                                <AlertTitle>Embedded wallet unavailable</AlertTitle>
-                                <AlertDescription>
-                                    Use a recent browser with passkey support and
-                                    an authenticator that exposes the WebAuthn PRF
-                                    extension. Chrome 133+ is the current baseline
-                                    target for this flow.
-                                </AlertDescription>
-                            </Alert>
-                        ) : null}
-                    </CardContent>
-                </Card>
 
                 <Card>
                     <CardHeader>
