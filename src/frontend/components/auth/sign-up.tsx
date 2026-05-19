@@ -11,6 +11,7 @@ import {
 } from "@better-auth-ui/react";
 import { useIsMutating } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/frontend/components/ui/button";
@@ -76,7 +77,6 @@ export function SignUp({
         socialProviders,
         viewPaths,
         navigate,
-        Link,
     } = useAuth();
 
     const { fetchOptions, resetFetchOptions } = useFetchOptions();

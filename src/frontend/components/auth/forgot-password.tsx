@@ -5,9 +5,9 @@ import {
     useFetchOptions,
     useRequestPasswordReset,
 } from "@better-auth-ui/react";
+import Link from "next/link";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/frontend/components/ui/button";
 import {
     Card,
@@ -40,7 +40,7 @@ export type ForgotPasswordProps = {
  * @returns The forgot-password form UI as a JSX element
  */
 export function ForgotPassword({ className }: ForgotPasswordProps) {
-    const { authClient, basePaths, localization, plugins, viewPaths, Link } =
+    const { authClient, basePaths, localization, plugins, viewPaths } =
         useAuth();
 
     const { fetchOptions, resetFetchOptions } = useFetchOptions();

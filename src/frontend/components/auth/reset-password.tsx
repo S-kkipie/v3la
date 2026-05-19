@@ -2,9 +2,10 @@
 
 import { useAuth, useResetPassword } from "@better-auth-ui/react";
 import { Eye, EyeOff } from "lucide-react";
+
+import Link from "next/link";
 import { type SyntheticEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/frontend/components/ui/button";
 import {
     Card,
@@ -27,7 +28,6 @@ import {
 import { Spinner } from "@/frontend/components/ui/spinner";
 import { cn } from "@/frontend/lib/utils";
 import { Label } from "../ui/label";
-
 export type ResetPasswordProps = {
     className?: string;
 };
@@ -47,7 +47,6 @@ export function ResetPassword({ className }: ResetPasswordProps) {
         localization,
         viewPaths,
         navigate,
-        Link,
     } = useAuth();
 
     const { mutate: resetPassword, isPending } = useResetPassword(authClient, {

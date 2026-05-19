@@ -8,9 +8,9 @@ import {
     useSignInEmail,
 } from "@better-auth-ui/react";
 import { useIsMutating } from "@tanstack/react-query";
+import Link from "next/link";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/frontend/components/ui/button";
 import {
     Card,
@@ -62,7 +62,6 @@ export function SignIn({
         socialProviders,
         viewPaths,
         navigate,
-        Link,
     } = useAuth();
 
     const { fetchOptions, resetFetchOptions } = useFetchOptions();
