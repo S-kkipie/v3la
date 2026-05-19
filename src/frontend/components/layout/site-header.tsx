@@ -5,7 +5,6 @@ import React, { type ReactElement, useEffect, useState } from "react";
 import { UserButton } from "@/frontend/components/auth/user/user-button";
 import { Separator } from "@/frontend/components/ui/separator";
 import { SidebarTrigger } from "@/frontend/components/ui/sidebar";
-import { useAuth } from "@/frontend/context/auth-context";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -19,7 +18,6 @@ export function SiteHeader({ home }: { home?: boolean }) {
     const pathname = usePathname();
     const [windowWidth, setWindowWidth] = useState(0);
 
-    const { user } = useAuth();
 
     useEffect(() => {
         const handleResize = () =>
@@ -84,7 +82,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
     }
 
     return (
-        <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+        <header className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
             <div
                 suppressHydrationWarning
                 className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6"
@@ -94,7 +92,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
                         <SidebarTrigger className="-ml-1" />
                         <Separator
                             orientation="vertical"
-                            className="mx-2 data-[orientation=vertical]:h-4"
+                            className="mx-2 data-[orientation=vertical]:h-10"
                         />
                     </>
                 )}

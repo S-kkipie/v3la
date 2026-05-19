@@ -19,8 +19,8 @@ import {
 } from "./key-derivation";
 import { sendToParent, setupMessageHandlers } from "./messaging";
 import {
-    generateMasterSeed,
     encryptMasterSeed,
+    generateMasterSeed,
     seedEnvelopeVersions,
     zeroSensitiveBuffer,
 } from "./seed-envelope";
@@ -82,7 +82,10 @@ async function provisionWallet(params: {
     credentialId: string;
     passkeyId: string;
 }): Promise<string> {
-    console.debug("[WalletIframe] Starting provisionWallet with params:", { ...params, userId: "HIDDEN_FOR_LOGS" });
+    console.debug("[WalletIframe] Starting provisionWallet with params:", {
+        ...params,
+        userId: "HIDDEN_FOR_LOGS",
+    });
     const { credentialId, passkeyId, userId } = params;
 
     if (typeof crypto.randomUUID !== "function") {
@@ -92,7 +95,10 @@ async function provisionWallet(params: {
 
     console.debug("[WalletIframe] Authenticating and getting PRF...");
     const prfOutput = await authenticateAndGetPrf(userId, credentialId);
-    console.debug("[WalletIframe] Successfully got PRF output, length:", prfOutput.byteLength);
+    console.debug(
+        "[WalletIframe] Successfully got PRF output, length:",
+        prfOutput.byteLength,
+    );
     const walletId = crypto.randomUUID();
     const generatedSeed = generateMasterSeed();
     const seedForEnvelope = generatedSeed.slice();
@@ -115,7 +121,10 @@ async function provisionWallet(params: {
             ),
         );
 
-        console.debug("[WalletIframe] Sending provision request to API...", { walletId, publicKey: address });
+        console.debug("[WalletIframe] Sending provision request to API...", {
+            walletId,
+            publicKey: address,
+        });
         const response = await fetch("/api/v1/wallet/provision", {
             method: "POST",
             headers: {
@@ -135,11 +144,14 @@ async function provisionWallet(params: {
         });
 
         if (!response.ok) {
-            console.error("[WalletIframe] Provision request failed with status:", response.status);
+            console.error(
+                "[WalletIframe] Provision request failed with status:",
+                response.status,
+            );
             clearWallet();
-            const errorBody = (await response.json().catch(() => null)) as
-                | { code?: string }
-                | null;
+            const errorBody = (await response.json().catch(() => null)) as {
+                code?: string;
+            } | null;
 
             console.error("[WalletIframe] Error response body:", errorBody);
 
@@ -171,7 +183,12 @@ async function provisionWallet(params: {
         console.debug("[WalletIframe] Provision successful, result:", result);
 
         if (result.response.publicKey !== address) {
-            console.error("[WalletIframe] Address mismatch. API returned:", result.response.publicKey, "Expected:", address);
+            console.error(
+                "[WalletIframe] Address mismatch. API returned:",
+                result.response.publicKey,
+                "Expected:",
+                address,
+            );
             clearWallet();
             throw new Error(
                 "Wallet address mismatch while provisioning the embedded wallet.",
@@ -217,7 +234,10 @@ export function WalletIframe() {
     );
 
     const handleProvision = useCallback(async () => {
-        console.debug("[WalletIframe] handleProvision triggered. Params:", params);
+        console.debug(
+            "[WalletIframe] handleProvision triggered. Params:",
+            params,
+        );
         if (!params?.userId || !params.credentialId || !params.passkeyId) {
             console.warn("[WalletIframe] Missing provisioning parameters.");
             setError("Missing wallet provisioning parameters");
@@ -233,7 +253,10 @@ export function WalletIframe() {
                 passkeyId: params.passkeyId,
             });
 
-            console.debug("[WalletIframe] Provision flow completed successfully. Address:", address);
+            console.debug(
+                "[WalletIframe] Provision flow completed successfully. Address:",
+                address,
+            );
             setStatus("PROVISIONING");
             setAddress(address);
             setStatus("READY");
@@ -243,7 +266,9 @@ export function WalletIframe() {
             console.error("[WalletIframe] handleProvision caught error:", err);
             clearWallet();
             setError(
-                err instanceof Error ? err.message : "Failed to provision wallet",
+                err instanceof Error
+                    ? err.message
+                    : "Failed to provision wallet",
             );
         }
     }, [params]);
@@ -437,7 +462,9 @@ const ReadyCard = memo(function ReadyCard({ address }: { address: string }) {
     return (
         <Card className="w-full max-w-sm">
             <CardHeader>
-                <CardTitle className="text-center">Wallet Provisioned</CardTitle>
+                <CardTitle className="text-center">
+                    Wallet Provisioned
+                </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-1">
@@ -452,8 +479,8 @@ const ReadyCard = memo(function ReadyCard({ address }: { address: string }) {
                     </p>
                 </div>
                 <p className="text-center text-xs text-muted-foreground">
-                    The encrypted wallet envelope was stored successfully. Unlock
-                    and reuse flows come next.
+                    The encrypted wallet envelope was stored successfully.
+                    Unlock and reuse flows come next.
                 </p>
             </CardContent>
         </Card>

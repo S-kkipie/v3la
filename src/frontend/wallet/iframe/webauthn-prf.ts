@@ -176,6 +176,7 @@ export async function registerCredential(
                 pubKeyCredParams: [{ alg: -7, type: "public-key" }],
                 timeout: TIMEOUT_MS,
                 authenticatorSelection: {
+                    authenticatorAttachment: "platform",
                     residentKey: "required",
                     userVerification: "required",
                 },
@@ -192,6 +193,16 @@ export async function registerCredential(
 
         if (!credential || !(credential instanceof PublicKeyCredential)) {
             throw new Error("Failed to create passkey credential");
+        }
+
+        const extResults = (credential as PublicKeyCredentialWithPrf).getClientExtensionResults();
+        console.debug("[WebAuthn] Registration extension results:", JSON.stringify(extResults));
+
+        if (!extResults.prf?.enabled) {
+            throw new PrfNotSupportedError(
+                "PRF extension was not enabled by the authenticator during registration. " +
+                "Please use a platform authenticator (e.g. Touch ID, Windows Hello) instead of a phone or external key.",
+            );
         }
 
         const response =
@@ -244,10 +255,15 @@ export async function authenticateAndGetPrf(
         }
 
         const extensionResults = assertion.getClientExtensionResults();
+        console.debug("[WebAuthn] Assertion extension results:", JSON.stringify(extensionResults));
         const prfResult = extensionResults.prf?.results?.first;
 
         if (!prfResult) {
-            throw new Error("PRF output missing from WebAuthn assertion");
+            throw new Error(
+                "PRF output missing from WebAuthn assertion. " +
+                "This usually happens when using a cross-device passkey (e.g. created on a phone). " +
+                "Please use a passkey created on this device's platform authenticator.",
+            );
         }
 
         return bufferSourceToArrayBuffer(prfResult);

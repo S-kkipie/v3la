@@ -1,6 +1,14 @@
 "use client";
 
-import { School } from "lucide-react";
+import {
+    CreditCard,
+    LayoutDashboard,
+    LifeBuoy,
+    School,
+    Send,
+    Settings2,
+    Wallet,
+} from "lucide-react";
 import Link from "next/link";
 import type * as React from "react";
 import {
@@ -12,7 +20,57 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/frontend/components/ui/sidebar";
+import { NavMain } from "./components/nav-main";
+import { NavSecondary } from "./components/nav-secondary";
 import { NavUser } from "./components/nav-user";
+
+const navMain = [
+    {
+        title: "Dashboard",
+        url: "/app",
+        icon: LayoutDashboard,
+    },
+    {
+        title: "Wallet",
+        url: "/wallet",
+        icon: Wallet,
+       
+    },
+    {
+        title: "Préstamos",
+        url: "/app",
+        icon: CreditCard,
+       
+    },
+    {
+        title: "Configuración",
+        url: "/settings/account",
+        icon: Settings2,
+        items: [
+            {
+                title: "Cuenta",
+                url: "/settings/account",
+            },
+            {
+                title: "Seguridad",
+                url: "/settings/security",
+            },
+        ],
+    },
+];
+
+const navSecondary = [
+    {
+        title: "Soporte",
+        url: "#",
+        icon: LifeBuoy,
+    },
+    {
+        title: "Feedback",
+        url: "#",
+        icon: Send,
+    },
+];
 
 /**
  * Application sidebar component with role-based navigation filtering.
@@ -36,10 +94,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-medium">
-                                    SGPU
+                                    V3LA
                                 </span>
                                 <span className="truncate text-xs">
-                                    Escuela de Posgrado
+                                    Finanzas Descentralizadas
                                 </span>
                             </div>
                         </SidebarMenuButton>
@@ -47,7 +105,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                {/* <NavMain items={navItems} /> */}
+                <NavMain items={navMain} />
+                <NavSecondary items={navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser />

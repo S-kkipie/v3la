@@ -92,7 +92,7 @@ function SidebarProvider({
         return isMobile
             ? setOpenMobile((open) => !open)
             : setOpen((open) => !open);
-    }, [isMobile, setOpen, setOpenMobile]);
+    }, [isMobile, setOpen]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -125,13 +125,12 @@ function SidebarProvider({
             toggleSidebar,
         }),
         [
-            state,
-            open,
-            setOpen,
-            isMobile,
-            openMobile,
-            setOpenMobile,
-            toggleSidebar,
+            state, 
+            open, 
+            setOpen, 
+            isMobile, 
+            openMobile, 
+            toggleSidebar
         ],
     );
 
@@ -320,7 +319,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
         <main
             data-slot="sidebar-inset"
             className={cn(
-                "relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
+                "relative flex w-full flex-1 flex-col bg-background  md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
                 className,
             )}
             {...props}
@@ -484,7 +483,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
         <li
             data-slot="sidebar-menu-item"
             data-sidebar="menu-item"
-            className={cn("group/menu-item relative", className)}
+            className={cn("group/menu-item relative m-0", className)}
             {...props}
         />
     );
