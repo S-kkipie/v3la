@@ -6,7 +6,7 @@
 
 - [x] Separar schema de wallet de auth
 - [x] Definir tablas `embedded_wallet`, `embedded_wallet_access` y `embedded_wallet_operation`
-- [ ] Crear migración Drizzle para tablas e índices
+- [x] Crear migración Drizzle para tablas e índices
 - [x] Crear servicio backend de wallet
 - [x] Crear endpoint `GET /api/v1/wallet/me`
 - [x] Agregar helper de capability detection PRF en frontend
@@ -18,7 +18,7 @@
 - [x] Refactorizar derivación para usar `masterSeed` en vez de PRF directo
 - [x] Crear endpoint `POST /api/v1/wallet/provision`
 - [x] Crear flujo UI “Create embedded wallet”
-- [ ] Probar alta end-to-end
+- [x] Probar alta end-to-end
 
 ### Fase 3: Unlock + Signing
 
