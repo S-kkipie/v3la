@@ -46,14 +46,12 @@ export function LandingHeader() {
 
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center gap-3">
-                    <Link href="/auth/sign-in">
-                        <Button variant="outline" size="sm">
-                            Iniciar sesión
-                        </Button>
-                    </Link>
-                    <Link href="/auth/sign-up">
-                        <Button size="sm">Empezar Ahora</Button>
-                    </Link>
+                    <Button variant="outline" size="sm" render={<Link href="/auth/sign-in" />}>
+                        Iniciar sesión
+                    </Button>
+                    <Button size="sm" render={<Link href="/auth/sign-up" />}>
+                        Empezar Ahora
+                    </Button>
                 </div>
 
                 {/* Mobile Menu */}
@@ -86,25 +84,19 @@ export function LandingHeader() {
                                 ))}
                             </nav>
                             <div className="flex flex-col gap-3 pt-4 border-t border-border">
-                                <Link
-                                    href="/auth/sign-in"
-                                    onClick={() => setOpen(false)}
+                                <Button
+                                    variant="outline"
+                                    className="w-full"
+                                    render={<Link href="/auth/sign-in" onClick={() => setOpen(false)} />}
                                 >
-                                    <Button
-                                        variant="outline"
-                                        className="w-full"
-                                    >
-                                        Iniciar sesión
-                                    </Button>
-                                </Link>
-                                <Link
-                                    href="/auth/sign-up"
-                                    onClick={() => setOpen(false)}
+                                    Iniciar sesión
+                                </Button>
+                                <Button
+                                    className="w-full"
+                                    render={<Link href="/auth/sign-up" onClick={() => setOpen(false)} />}
                                 >
-                                    <Button className="w-full">
-                                        Empezar Ahora
-                                    </Button>
-                                </Link>
+                                    Empezar Ahora
+                                </Button>
                             </div>
                         </div>
                     </SheetContent>

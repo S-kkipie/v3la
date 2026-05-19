@@ -64,11 +64,10 @@ export function NavMain({
                                 <SidebarMenuButton
                                     tooltip={item.title}
                                     isActive={pathname === item.url}
+                                    render={<a href={item.url} />}
                                 >
-                                    <a href={item.url}>
-                                        <item.icon />
-                                        <span>{item.title}</span>
-                                    </a>
+                                    <item.icon />
+                                    <span>{item.title}</span>
                                 </SidebarMenuButton>
                                 {item.items?.length ? (
                                     <>
@@ -91,18 +90,13 @@ export function NavMain({
                                                                 pathname ===
                                                                 subItem.url
                                                             }
+                                                            render={<a href={subItem.url} />}
                                                         >
-                                                            <a
-                                                                href={
-                                                                    subItem.url
+                                                            <span>
+                                                                {
+                                                                    subItem.title
                                                                 }
-                                                            >
-                                                                <span>
-                                                                    {
-                                                                        subItem.title
-                                                                    }
-                                                                </span>
-                                                            </a>
+                                                            </span>
                                                         </SidebarMenuSubButton>
                                                     </SidebarMenuSubItem>
                                                 ))}

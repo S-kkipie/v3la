@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
+import { Suspense } from "react";
+import { ErrorToast } from "@/frontend/components/error-toast";
 import { cn } from "@/frontend/lib/utils";
 import Providers from "@/frontend/providers/providers";
 
@@ -35,6 +37,9 @@ export default function RootLayout({
                 className={`${geist.variable} ${geistMono.variable} antialiased`}
             >
                 <NuqsAdapter>
+                    <Suspense fallback={null}>
+                        <ErrorToast />
+                    </Suspense>
                     <Providers>{children}</Providers>
                 </NuqsAdapter>
             </body>

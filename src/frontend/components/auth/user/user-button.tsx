@@ -24,6 +24,7 @@ import { Button } from "@/frontend/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -130,36 +131,37 @@ export function UserButton({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className={cn(
-          size === "icon" && "rounded-full",
-          size === "icon" && className
-        )}
-      >
-        {size === "icon" ? (
+      {size === "icon" ? (
+        <DropdownMenuTrigger
+          className={cn("rounded-full", className)}
+        >
           <UserAvatar />
-        ) : (
-          <Button
-            variant={variant}
-            className={cn("py-2.5 h-auto font-normal", className)}
-            size="lg"
-          >
-            {session || sessionPending || settingActiveSession ? (
-              <UserView isPending={!!settingActiveSession} />
-            ) : (
-              <>
-                <UserAvatar />
+        </DropdownMenuTrigger>
+      ) : (
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant={variant}
+              className={cn("py-2.5 h-auto font-normal", className)}
+              size="lg"
+            />
+          }
+        >
+          {session || sessionPending || settingActiveSession ? (
+            <UserView isPending={!!settingActiveSession} />
+          ) : (
+            <>
+              <UserAvatar />
 
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  {localization.auth.account}
-                </div>
-              </>
-            )}
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                {localization.auth.account}
+              </div>
+            </>
+          )}
 
-            <ChevronsUpDown className="ml-auto" />
-          </Button>
-        )}
-      </DropdownMenuTrigger>
+          <ChevronsUpDown className="ml-auto" />
+        </DropdownMenuTrigger>
+      )}
 
       <DropdownMenuContent
         className="min-w-40 md:min-w-56 max-w-[48svw]"
@@ -168,9 +170,11 @@ export function UserButton({
       >
         {session && (
           <>
-            <DropdownMenuLabel className="text-sm font-normal">
-              <UserView />
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-sm font-normal">
+                <UserView />
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
           </>

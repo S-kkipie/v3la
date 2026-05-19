@@ -22,7 +22,7 @@ export default async function DashboardLayout({
     if (!auth) {
         logger.info("No authentication found, redirecting to login");
         redirect(
-            "/login?error_message=No se encontro una cuenta activa, contactate con un administrador",
+            "/auth/sign-in?error_message=No se encontro una cuenta activa",
         );
     }
 
