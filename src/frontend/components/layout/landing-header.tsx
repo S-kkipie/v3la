@@ -46,21 +46,31 @@ export function LandingHeader() {
 
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center gap-3">
-                    <Button variant="outline" size="sm" render={<Link href="/auth/sign-in" />}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        nativeButton={false}
+                        render={<Link href="/auth/sign-in" />}
+                    >
                         Iniciar sesión
                     </Button>
-                    <Button size="sm" render={<Link href="/auth/sign-up" />}>
+                    <Button
+                        size="sm"
+                        nativeButton={false}
+                        render={<Link href="/auth/sign-up" />}
+                    >
                         Empezar Ahora
                     </Button>
                 </div>
 
                 {/* Mobile Menu */}
                 <Sheet open={open} onOpenChange={setOpen}>
-                    <SheetTrigger className="md:hidden">
-                        <Button variant="ghost" size="icon-sm">
-                            <Menu className="size-5" />
-                            <span className="sr-only">Abrir menú</span>
-                        </Button>
+                    <SheetTrigger
+                        className="md:hidden"
+                        render={<Button variant="ghost" size="icon-sm" />}
+                    >
+                        <Menu className="size-5" />
+                        <span className="sr-only">Abrir menú</span>
                     </SheetTrigger>
                     <SheetContent side="right" className="w-3/4 max-w-sm">
                         <div className="flex flex-col gap-6 pt-8">
@@ -87,13 +97,25 @@ export function LandingHeader() {
                                 <Button
                                     variant="outline"
                                     className="w-full"
-                                    render={<Link href="/auth/sign-in" onClick={() => setOpen(false)} />}
+                                    nativeButton={false}
+                                    render={
+                                        <Link
+                                            href="/auth/sign-in"
+                                            onClick={() => setOpen(false)}
+                                        />
+                                    }
                                 >
                                     Iniciar sesión
                                 </Button>
                                 <Button
                                     className="w-full"
-                                    render={<Link href="/auth/sign-up" onClick={() => setOpen(false)} />}
+                                    nativeButton={false}
+                                    render={
+                                        <Link
+                                            href="/auth/sign-up"
+                                            onClick={() => setOpen(false)}
+                                        />
+                                    }
                                 >
                                     Empezar Ahora
                                 </Button>

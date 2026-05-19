@@ -55,6 +55,7 @@
         "@tanstack/react-pacer": "^0.22.1",
         "@tanstack/react-query": "^5.100.10",
         "better-auth": "^1.6.11",
+        "bowser": "^2.14.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "date-fns": "^4.1.0",

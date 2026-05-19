@@ -56,10 +56,7 @@ export function NavMain({
                     const isOpen = activeMap.get(item.title) ?? false;
 
                     return (
-                        <Collapsible
-                            key={item.title}
-                            defaultOpen={isOpen}
-                        >
+                        <Collapsible key={item.title} defaultOpen={isOpen}>
                             <SidebarMenuItem>
                                 <SidebarMenuButton
                                     tooltip={item.title}
@@ -71,7 +68,7 @@ export function NavMain({
                                 </SidebarMenuButton>
                                 {item.items?.length ? (
                                     <>
-                                        <CollapsibleTrigger >
+                                        <CollapsibleTrigger>
                                             <SidebarMenuAction className="data-[state=open]:rotate-90">
                                                 <ChevronRight />
                                                 <span className="sr-only">
@@ -90,12 +87,16 @@ export function NavMain({
                                                                 pathname ===
                                                                 subItem.url
                                                             }
-                                                            render={<a href={subItem.url} />}
+                                                            render={
+                                                                <a
+                                                                    href={
+                                                                        subItem.url
+                                                                    }
+                                                                />
+                                                            }
                                                         >
                                                             <span>
-                                                                {
-                                                                    subItem.title
-                                                                }
+                                                                {subItem.title}
                                                             </span>
                                                         </SidebarMenuSubButton>
                                                     </SidebarMenuSubItem>

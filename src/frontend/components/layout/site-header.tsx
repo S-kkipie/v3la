@@ -15,7 +15,6 @@ import {
     BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 
-
 export function SiteHeader({ home }: { home?: boolean }) {
     const pathname = usePathname();
     const [windowWidth, setWindowWidth] = useState(0);
@@ -102,9 +101,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/app">
-                                Inicio
-                            </BreadcrumbLink>
+                            <BreadcrumbLink href="/app">Inicio</BreadcrumbLink>
                         </BreadcrumbItem>
                         {pathSegments.length > 0 && <BreadcrumbSeparator />}
                         {breadcrumbItems}

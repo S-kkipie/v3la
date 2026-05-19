@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
 import {
-  type UsernameAuthClient,
-  useAuth,
-  useSession
-} from "@better-auth-ui/react"
-import type { User } from "better-auth"
+    type UsernameAuthClient,
+    useAuth,
+    useSession,
+} from "@better-auth-ui/react";
+import type { User } from "better-auth";
 
-import { Skeleton } from "@/frontend/components/ui/skeleton"
-import { cn } from "@/frontend/lib/utils"
-import { UserAvatar } from "./user-avatar"
+import { Skeleton } from "@/frontend/components/ui/skeleton";
+import { cn } from "@/frontend/lib/utils";
+import { UserAvatar } from "./user-avatar";
 
 export type UserViewProps = {
-  className?: string
-  isPending?: boolean
-  /** @remarks `User` */
-  user?: User & { username?: string | null; displayUsername?: string | null }
-}
+    className?: string;
+    isPending?: boolean;
+    /** @remarks `User` */
+    user?: User & { username?: string | null; displayUsername?: string | null };
+};
 
 /**
  * Render a compact user item with an avatar, a primary label (display username, name, or email), and an optional secondary email line.
@@ -27,44 +27,44 @@ export type UserViewProps = {
  * @returns A React element showing the user's avatar with their identifying information
  */
 export function UserView({ className, isPending, user }: UserViewProps) {
-  const { authClient } = useAuth()
-  const { data: session, isPending: sessionPending } = useSession(
-    authClient as UsernameAuthClient,
-    { enabled: !user && !isPending }
-  )
+    const { authClient } = useAuth();
+    const { data: session, isPending: sessionPending } = useSession(
+        authClient as UsernameAuthClient,
+        { enabled: !user && !isPending },
+    );
 
-  const resolvedUser = user ?? session?.user
+    const resolvedUser = user ?? session?.user;
 
-  if ((isPending || sessionPending) && !user) {
+    if ((isPending || sessionPending) && !user) {
+        return (
+            <div className={cn("flex items-center gap-2", className)}>
+                <UserAvatar isPending />
+
+                <div className="grid flex-1 gap-1 text-left text-sm">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                </div>
+            </div>
+        );
+    }
+
     return (
-      <div className={cn("flex items-center gap-2", className)}>
-        <UserAvatar isPending />
+        <div className={cn("flex items-center gap-2", className)}>
+            <UserAvatar user={resolvedUser} />
 
-        <div className="grid flex-1 gap-1 text-left text-sm">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-3 w-32" />
+            <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium text-foreground">
+                    {resolvedUser?.displayUsername ||
+                        resolvedUser?.name ||
+                        resolvedUser?.email}
+                </span>
+
+                {(resolvedUser?.displayUsername || resolvedUser?.name) && (
+                    <span className="text-muted-foreground truncate text-xs">
+                        {resolvedUser?.email}
+                    </span>
+                )}
+            </div>
         </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <UserAvatar user={resolvedUser} />
-
-      <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-medium text-foreground">
-          {resolvedUser?.displayUsername ||
-            resolvedUser?.name ||
-            resolvedUser?.email}
-        </span>
-
-        {(resolvedUser?.displayUsername || resolvedUser?.name) && (
-          <span className="text-muted-foreground truncate text-xs">
-            {resolvedUser?.email}
-          </span>
-        )}
-      </div>
-    </div>
-  )
+    );
 }
