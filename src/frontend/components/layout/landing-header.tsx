@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth, useAuthenticate } from "@better-auth-ui/react";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,6 +21,8 @@ const navLinks = [
 
 export function LandingHeader() {
     const [open, setOpen] = useState(false);
+    const { authClient } = useAuth();
+    const { data: session } = useAuthenticate(authClient);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
@@ -46,21 +49,36 @@ export function LandingHeader() {
 
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center gap-3">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        nativeButton={false}
-                        render={<Link href="/auth/sign-in" />}
-                    >
-                        Iniciar sesión
-                    </Button>
-                    <Button
-                        size="sm"
-                        nativeButton={false}
-                        render={<Link href="/auth/sign-up" />}
-                    >
+                    {!session && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            nativeButton={false}
+                            render={<Link href="/auth/sign-in" />}
+                        >
+                            Iniciar sesión
+                        </Button>
+                    )}
+
+                    {!session && (
+                        <Button
+                            size="sm"
+                            nativeButton={false}
+                            render={<Link href="/auth/sign-up" />}
+                        >
                         Empezar Ahora
-                    </Button>
+                    </Button> 
+                    )}
+
+                    {session && (
+                        <Button
+                            size="sm"
+                            nativeButton={false}
+                            render={<Link href="/app" />}
+                        >
+                            Ir a la App
+                        </Button>
+                    )}
                 </div>
 
                 {/* Mobile Menu */}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth, useAuthenticate } from "@better-auth-ui/react";
 import {
     ArrowRight,
     Brain,
@@ -137,6 +138,9 @@ function getInitials(name: string) {
 }
 
 export default function Home() {
+    const { authClient } = useAuth();
+    const { data: session } = useAuthenticate(authClient);
+
     return (
         <div className="min-h-screen bg-background text-foreground">
             <LandingHeader />
@@ -174,14 +178,27 @@ export default function Home() {
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4">
-                                    <Link href="/auth/sign-up">
-                                        <Button
-                                            size="lg"
-                                            className="rounded-full px-8 text-base"
-                                        >
-                                            Crear mi Perfil Gratis
-                                        </Button>
-                                    </Link>
+                                    {!session && (
+                                        <Link href="/auth/sign-up">
+                                            <Button
+                                                size="lg"
+                                                className="rounded-full px-8 text-base"
+                                            >
+                                                Crear mi Perfil Gratis
+                                            </Button>
+                                        </Link>
+                                    )}
+
+                                    {session && (
+                                        <Link href="/app">
+                                            <Button
+                                                size="lg"
+                                                className="rounded-full px-8 text-base"
+                                            >
+                                                Ir a la App
+                                            </Button>
+                                        </Link>
+                                    )}
                                     <Link
                                         href="#como-funciona"
                                         className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"

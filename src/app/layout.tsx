@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
+import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 import { ErrorToast } from "@/frontend/components/error-toast";
 import { cn } from "@/frontend/lib/utils";
@@ -36,6 +37,8 @@ export default function RootLayout({
                 suppressHydrationWarning
                 className={`${geist.variable} ${geistMono.variable} antialiased`}
             >
+                <NextTopLoader />
+
                 <NuqsAdapter>
                     <Suspense fallback={null}>
                         <ErrorToast />

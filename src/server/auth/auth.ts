@@ -31,14 +31,12 @@ export const auth = betterAuth({
             registration: {
                 extensions: {
                     credProps: true,
-                    prf: true,
-                } as Record<string, boolean>,
+                },
             },
             authentication: {
                 extensions: {
                     credProps: true,
-                    prf: true,
-                } as Record<string, boolean>,
+                },
             },
         }),
         multiSession(),
